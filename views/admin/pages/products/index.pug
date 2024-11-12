@@ -1,0 +1,103 @@
+extends ../../layouts/default.pug
+include ../../mixins/search.pug
+include ../../mixins/pagination.pug
+include ../../mixins/form-multi.pug
+include ../../mixins/alert.pug
+ 
+
+block main 
+
+    +alert-success(3000)
+    +alert-error(3000)
+
+    h1 Quản lý xe
+
+    .card.mb-3 
+        .card-header Bộ lọc và Tìm kiếm 
+        .card-body
+            .row
+                .col-6
+                    button(
+                        class="btn btn-sm ml-1 btn-outline-success active"
+                    ) Tất cả
+                .col-6
+                    +search(keyword)
+
+
+    .card.mb-3 
+        .card-header Danh sách xe
+            .car-body
+                .row
+                    .col-10
+                        +form-multi(`${prefixAdmin}/car_items/change-multi?_method=PATCH`)
+                    .col-2
+                        a(
+                            href=`${prefixAdmin}/car_items/create`
+                            class="btn btn-outline-success"
+                        ) + Thêm mới
+
+
+                
+                table(
+                    class="table table-hover table-sm"
+                    checkbox-multi
+                )
+                    thead   
+                        tr 
+                            th 
+                                input(type="checkbox" checkbox-multi name="checkall")
+                            th STT 
+                            th Hình ảnh
+                            th Hãng xe  
+                            th Tên xe 
+                            th Phiên bản
+                            th Giá
+                            th Hành động
+                    tbody
+                        each car, index in Car_items   
+                            tr
+                                td
+                                    input(
+                                        type="checkbox"
+                                        name="id"
+                                        value=car.id
+                                    )
+                                td #{index+1}
+                                td 
+                                    img(src=car.imageUrl[0] alt=car.version width="100px" height="auto")
+                                td #{car.brand}
+                                td #{car.name}
+                                td #{car.version}
+                                td #{car.price}
+                                td  
+                                    a(
+                                        href=`${prefixAdmin}/car_items/detail/${car.id}`
+                                        class="btn btn-primary btn-sm" 
+                                        style="margin-right:5px;"
+                                    ) Chi tiết
+                                    a(
+                                        href=`${prefixAdmin}/car_items/edit/${car.id}`
+                                        class="btn btn-warning btn-sm" 
+                                        style="margin-right:5px;"
+                                    ) Sửa
+                                    button(
+                                        class="btn btn-danger btn-sm"
+                                        button-delete
+                                        data-id=car.id
+                                    ) Xóa
+                                    //- i(class="btn btn-danger btn-sm fa-regular fa-trash-can" button-delete data-id=car.id)
+
+
+    +pagination(pagination)
+
+    form(
+        action=""
+        method="POST"
+        id="form-delete-item"
+        data-path=`${prefixAdmin}/car_items/delete`
+    )
+
+    script(src="/admin/js/product.js")
+    script(src="/admin/js/script.js")
+           
+

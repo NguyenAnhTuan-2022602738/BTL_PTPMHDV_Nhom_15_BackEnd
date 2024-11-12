@@ -1,0 +1,32 @@
+extends ../../layouts/default.pug
+include ../../mixins/box-head.pug
+
+block main
+
+    .container.my-3 
+        .row 
+            .col-12 
+                +box-head("Danh sách xe")
+        .row 
+            .col-12 
+                table.table-items 
+                    thead 
+                        th STT
+                        th Hãng xe 
+                        th Tên xe
+                        th Phiên bản 
+                        th Phân khúc
+                        th Động cơ
+                        th Giá
+                    tbody 
+                        each car in Car_items
+                            tr
+                                td #{STT++}
+                                td #{car.brand}
+                                td 
+                                    a(href= `car_items/detail/${car.id}`) #{car.name}
+                                td #{car.version}
+                                td #{car.vehicle_segment}
+                                td #{car.engine}
+                                td #{car.price}
+                            

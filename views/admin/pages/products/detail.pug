@@ -1,0 +1,207 @@
+extends ../../layouts/default.pug
+include ../../mixins/specs-view.pug
+include ../../mixins/alert.pug
+
+block main 
+    .box-title
+        +alert-success(3000)
+
+        h1(class="mb-4") Chi tiết xe 
+
+    .container
+        .row 
+            .col-8
+                div(class="car-info shadow p-3 mb-5 bg-white rounded")
+                    .row
+                        .col-10
+                            h2.car-title #{car.name} - #{car.version}
+                        .col-2
+                            a(
+                                href=`${prefixAdmin}/car_items/edit/${car.id}`
+                                class="btn btn-warning btn-sm" 
+                            ) Chỉnh sửa
+                    .car-price-container
+                        p.car-price Giá bán: 
+                            span.price #{car.price} VND
+                    .car-segment-container
+                        p.car-segment Phân khúc: 
+                            span.segment #{car.vehicle_segment}
+                    .car-segment-container
+                        p.car-segment Thương hiệu: 
+                            span.segment #{car.brand}
+
+                // Gallery section
+                div(class="gallery-car shadow p-3 mb-5 bg-white rounded" id="tongquan")
+                    .thumb-big
+                        a.thumb_img(href="javascript:;" data-id="0")
+                            img(src=car.imageUrl[0], alt=`Hình ảnh của ${car.name}`, class="main-image")
+                    .gallery-thumbs
+                        each image, index in car.imageUrl.slice(1)
+                            a.thumb_img(href="javascript:;" data-id=index + 1)
+                                img(src=image, alt=`Hình ảnh của ${car.name} thumbnail`, class="thumbnail-image")
+
+                div(class="car-description shadow p-3 mb-5 bg-white rounded")
+                    h3 Mô tả và Đánh giá
+                    p #{car.description || "Thông tin đang cập nhật..."}
+
+                div(class="car-specs shadow p-3 mb-5 bg-white rounded")
+                    h3 Thông số kỹ thuật
+
+                    // Engine and transmission specs
+                    .card.specs-section
+                        .specs-header 
+                            | Động cơ/hộp số
+                            span.toggle-sign
+                                i.fa-solid.fa-plus
+                        table.table.specs-table
+                            tbody
+                                +featureRow("Kiểu động cơ", car.kieuDongCo)
+                                +featureRow("Dung tích (cc)", car.dungTich)
+                                +featureRow("Công suất (Mã lực/vòng/phút)", car.congSuat)
+                                +featureRow("Mô-men xoắn (Nm/vòng/phút)", car.momenXoan)
+                                +featureRow("Hộp số", car.hopso)
+                                +featureRow("Hệ dẫn động", car.heDanDong)
+                                +featureRow("Loại nhiên liệu", car.loaiNhienLieu)
+                                +featureRow("Mức tiêu thụ nhiên liệu", car.mucTieuThuNhienLieu)
+
+                    // Dimensions and weight specs
+                    .card.specs-section
+                        .specs-header 
+                            | Kích thước/trọng lượng
+                            span.toggle-sign
+                                i.fa-solid.fa-plus
+                        table.table.specs-table
+                            tbody
+                                +featureRow("Số chỗ", car.soCho)
+                                +featureRow("Kích thước (Dài x Rộng x Cao)", car.kichThuoc)
+                                +featureRow("Chiều dài cơ sở (mm)", car.chieuDaiCoSo)
+                                +featureRow("Khoảng sáng gầm (mm)", car.khoangSangGam)
+                                +featureRow("Bán kính vòng quay (m)", car.banKinhVongQuay)
+                                +featureRow("Thể tích khoang hành lý (L)", car.theTichKhoangHanhLy)
+                                +featureRow("Dung tích bình nhiên liệu (L)", car.dungTichBinhNhienLieu)
+                                +featureRow("Trọng lượng bản thân (kg)", car.trongLuongBanThan)
+                                +featureRow("Trọng lượng toàn tải (kg)", car.trongLuongToanTai)
+                                +featureRow("Lốp/Lazang", car.lop_lazang)   
+
+            
+                    .card.specs-section
+                        .specs-header 
+                            | Hệ thống treo/phanh
+                            span.toggle-sign
+                                i.fa-solid.fa-plus
+                        table.table.specs-table
+                            tbody
+                                +featureRow("Treo trước", car.treoTruoc)
+                                +featureRow("Treo sau", car.treoSau)
+                                +featureRow("Phanh trước", car.phanhTruoc)
+                                +featureRow("Phanh sau", car.phanhSau)
+                    
+                    .card.specs-section
+                        .specs-header 
+                            | Ngoại thất
+                            span.toggle-sign
+                                i.fa-solid.fa-plus
+                        table.table.specs-table
+                            tbody
+                                +featureRow("Đèn phanh trên cao", car.denPhanhTrenCao)
+                                +featureRow("Gương chiếu hậu", car.guongChieuHau)
+                                +featureRow("Sấy gương chiếu hậu", car.sayGuongChieuHau)
+                                +featureRow("Gạt mưa tự động", car.gatMuaTuDong)
+                                +featureRow("Đèn chiếu xa", car.denChieuXa)
+                                +featureRow("Đèn chiếu gần", car.denChieuGan)
+                                +featureRow("Đèn ban ngày", car.denBanNgay)
+                                +featureRow("Đèn pha tự động bật/tắt", car.denPhaTuDongBat_Tat)
+                                +featureRow("Đèn pha tự động xa/gần", car.denPhaTuDongXa_Gan)
+                                +featureRow("Đèn pha tự động điều chỉnh góc chiếu", car.denPhaTuDongDieuChinhGocChieu)
+                                +featureRow("Đèn hậu", car.denHau)
+                                +featureRow("Ăng-ten vây cá", car.angTenVayCa)
+                                +featureRow("Cốp đóng/mở điện", car.copDong_MoDien)
+                                +featureRow("Mở cốp rảnh tay", car.moCopRanhTay)
+
+                    .card.specs-section
+                        .specs-header 
+                            | Nội thất
+                            span.toggle-sign
+                                i.fa-solid.fa-plus
+                        table.table.specs-table
+                            tbody
+                                +featureRow("Chất liệu bọc ghế", car.chatLieuBocGhe)
+                                +featureRow("Điều chỉnh ghế lái", car.dieuChinhGheLai)
+                                +featureRow("Nhớ vị trí ghế lái", car.nhoViTriGheLai)
+                                +featureRow("Massage ghế lái", car.massageGheLai)
+                                +featureRow("Điều chỉnh ghế phụ", car.dieuChinhGhePhu)
+                                +featureRow("Massage ghế phụ", car.massageGhePhu)
+                                +featureRow("Thông gió ghế lái", car.thongGioGheLai)
+                                +featureRow("Thông gió ghế phụ", car.thongGioGhePhu)
+                                +featureRow("Sưởi ấm ghế lái", car.suoiAmGheLai)
+                                +featureRow("Sưởi ấm ghế phụ", car.suoiAmGhePhu)
+                                +featureRow("Bảng đồng hồ tài xế", car.bangDongHoTaiXe)
+                                +featureRow("Nút bấm tích hợp trên vô lăng", car.nutBamTichHopTrenVolang)
+                                +featureRow("Chất liệu bọc vô lăng", car.chatLieuBocVoLang)
+                                +featureRow("Chìa khóa thông minh", car.chiaKhoaThongMinh)
+                                +featureRow("Khởi động nút bấm", car.khoiDongNutBam)
+                                +featureRow("Điều hòa", car.dieuHoa)
+                                +featureRow("Cửa gió hàng ghế sau", car.cuaGioHangGheSau)
+                                +featureRow("Cửa kính một chạm", car.cuaKinhMotCham)
+                                +featureRow("Cửa sổ trời", car.cuaSoTroi)
+                                +featureRow("Cửa sổ trời toàn cảnh", car.cuaSoTroiToanCanh)
+                                +featureRow("Gương chiếu hậu trong xe chống chói tự động", car.guongChieuHauTrongXeChongChoiTuDong)
+                                +featureRow("Tựa tay hàng ghế trước", car.tuaTayHangGheTruoc)
+                                +featureRow("Tựa tay hàng ghế sau", car.tuaTayHangGheSau)
+                                +featureRow("Màn hình giải trí", car.manHinhGiaiTri)
+                                +featureRow("Kết nối Apple CarPlay", car.ketNoiAppleCarPlay)
+                                +featureRow("Kết nối Android Auto", car.ketNoiAndroidAuto)
+                                +featureRow("Ra lệnh giọng nói", car.raLenhGiongNoi)
+                                +featureRow("Đàm thoại rảnh tay", car.damThoaiRanhTay)
+                                +featureRow("Hệ thống loa", car.heThongLoa)
+                                +featureRow("Phát WiFi", car.phatWifi)
+                                +featureRow("Kết nối AUX", car.ketNoiAUX)
+                                +featureRow("Kết nối USB", car.ketNoiUSB)
+                                +featureRow("Kết nối Bluetooth", car.ketNoiBluetooth)
+                                +featureRow("Radio AM/FM", car.radioAM_FM)
+                                +featureRow("Sạc không dây", car.sacKhongDay)
+
+                    .card.specs-section
+                        .specs-header 
+                            | Hỗ trợ vận hành
+                            span.toggle-sign
+                                i.fa-solid.fa-plus
+                        table.table.specs-table
+                            tbody
+                                +featureRow("Trợ lực vô lăng", car.troLucVoLang)
+                                +featureRow("Nhiều chế độ lái", car.nhieuCheDoLai)
+                                +featureRow("Lẫy chuyển số trên vô lăng", car.layChuyenSoTrenVoLang)
+                                +featureRow("Kiểm soát gia tốc", car.kiemSoatGiaToc)
+                                +featureRow("Phanh tay điện tử", car.phanhTayDienTu)
+                                +featureRow("Giữ phanh tự động", car.giuPhanhTuDong)
+
+                    .card.specs-section
+                        .specs-header 
+                            | Công nghệ an toàn
+                            span.toggle-sign
+                                i.fa-solid.fa-plus
+                        table.table.specs-table
+                            tbody
+                                +featureRow("Kiểm soát hành trình", car.kiemSoatHanhTrinh)
+                                +featureRow("Kiểm soát hành trình thích ứng", car.kiemSoatHanhTrinhThichUng)
+                                +featureRow("Cảnh báo phương tiện cắt ngang khi lùi", car.canhBaoPhuongTienCatNgangKhiLui)
+                                +featureRow("Cảnh báo tài xế buồn ngủ", car.canhBaoTaiXeBuonNgu)
+                                +featureRow("Móc ghế an toàn cho trẻ em Isofix", car.mocGheAnToanChoTreEmIsofix)
+                                +featureRow("Hỗ trợ đỗ đèo", car.hoTroDoDeo)
+                                +featureRow("Cảnh báo điểm mù", car.canhBaoDiemMu)
+                                +featureRow("Cảm biến lùi", car.camBienLui)
+                                +featureRow("Camera lùi", car.cameraLui)
+                                +featureRow("Camera 360", car.camera360)
+                                +featureRow("Camera quan sát làn đường", car.cameraQuanSatLanDuong)
+                                +featureRow("Cảnh báo chệch làn đường", car.canhBaoChechLanDuong)
+                                +featureRow("Hỗ trợ giữ làn", car.hoTroGiuLan)
+                                +featureRow("Hỗ trợ phanh tự động giảm thiểu va chạm", car.hoTroPhanhTuDongGiamThieuVaCham)
+                                +featureRow("Phân phối lực phanh điện tử", car.phanPhoiLucPhanhDienTu)
+                                +featureRow("Cân bằng điện tử", car.canBangDienTu)
+                                +featureRow("Kiểm soát lực kéo", car.kiemSoatLucKeo)
+                                +featureRow("Hỗ trợ khởi hành ngang dốc", car.hoTroKhoiHanhNgangDoc)
+                                +featureRow("Số túi khí", car.soTuiKhi)
+                                +featureRow("Chống bó cứng phanh", car.chongBoCungPhanh)
+                                +featureRow("Hỗ trợ lực phanh khẩn cấp", car.hoTroLucPhanhKhanCap)      
+
+    script(src="/admin/js/product.js")

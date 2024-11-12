@@ -1,0 +1,16 @@
+mixin featureRow(name, value)
+    tr
+        th= name
+        td 
+            if value == "true"
+                i.fa.fa-check(style="color: green;")
+            else if value == "false"
+                i.fa.fa-times(style="color: red;")
+            else if value == "có"
+                i.fa.fa-check(style="color: green;")
+            else if value == "không có"
+                i.fa.fa-times(style="color: red;")
+            else if value
+                = value
+            else
+                | Đang cập nhật

@@ -1,0 +1,1054 @@
+extends ../../layouts/default.pug
+include ../../mixins/alert.pug
+block main
+    +alert-success(3000)
+    +alert-error(3000)
+
+    h1(class="mb-4") Sửa thông tin xe
+
+    form(
+        action=`${prefixAdmin}/car_items/edit/${car.id}?_method=PATCH`
+        id="form-edit-product"
+        method="POST"
+        enctype="multipart/form-data"
+    )
+        .container
+            // Thông tin chung
+            div(class="form-group")
+                label(for="name") Tên xe
+                input(type="text" class="form-control" id="name" name="name" required value=car.name)
+
+            div(class="form-group")
+                label(for="brand") Hãng xe
+                input(type="text" class="form-control" id="brand" name="brand" required value=car.brand)
+
+            div(class="form-group")
+                label(for="version") Phiên bản
+                input(type="text" class="form-control" id="version" name="version" required value=car.version)
+
+            div(class="form-group")
+                label(for="vehicle_segment") Phân khúc xe
+                select(class="form-control custom-select" id="vehicle_segment" name="vehicle_segment" required)
+                    option(selected disabled) -- Chọn phân khúc xe --
+                    option(value="Xe nhỏ cỡ A" selected=car.vehicle_segment === "Xe nhỏ cỡ A") Xe nhỏ cỡ A
+                    option(value="Xe nhỏ hạng B" selected=car.vehicle_segment === "Xe nhỏ hạng B") Xe nhỏ hạng B
+                    option(value="Xe nhỏ hạng B+/C-" selected=car.vehicle_segment === "Xe nhỏ hạng B+/C-") Xe nhỏ hạng B+/C-
+                    option(value="Xe cỡ vừa hạng C" selected=car.vehicle_segment === "Xe cỡ vừa hạng C") Xe cỡ vừa hạng C
+                    option(value="Xe cỡ trung hạng D" selected=car.vehicle_segment === "Xe cỡ trung hạng D") Xe cỡ trung hạng D
+                    option(value="Xe cỡ trung hạng E" selected=car.vehicle_segment === "Xe cỡ trung hạng E") Xe cỡ trung hạng E
+                    option(value="Bán tải cỡ trung" selected=car.vehicle_segment === "Bán tải cỡ trung") Bán tải cỡ trung
+                    option(value="MPV cỡ nhỏ" selected=car.vehicle_segment === "MPV cỡ nhỏ") MPV cỡ nhỏ
+                    option(value="MPV cỡ trung" selected=car.vehicle_segment === "MPV cỡ trung") MPV cỡ trung
+                    option(value="SUV phổ thông cỡ lớn" selected=car.vehicle_segment === "SUV phổ thông cỡ lớn") SUV phổ thông cỡ lớn
+                    option(value="Xe nhỏ cỡ A+/B-" selected=car.vehicle_segment === "Xe nhỏ cỡ A+/B-") Xe nhỏ cỡ A+/B-
+                    option(value="Xe siêu nhỏ" selected=car.vehicle_segment === "Xe siêu nhỏ") Xe siêu nhỏ
+                    option(value="MPV cỡ lớn" selected=car.vehicle_segment === "MPV cỡ lớn") MPV cỡ lớn
+                    option(value="Xe sang cỡ nhỏ" selected=car.vehicle_segment === "Xe sang cỡ nhỏ") Xe sang cỡ nhỏ
+                    option(value="Xe sang cỡ trung" selected=car.vehicle_segment === "Xe sang cỡ trung") Xe sang cỡ trung
+                    option(value="Xe sang cỡ lớn" selected=car.vehicle_segment === "Xe sang cỡ lớn") Xe sang cỡ lớn
+                    option(value="MPV hạng sang" selected=car.vehicle_segment === "MPV hạng sang") MPV hạng sang
+                    option(value="Bán tải cỡ lớn" selected=car.vehicle_segment === "Bán tải cỡ lớn") Bán tải cỡ lớn
+                    option(value="Siêu xe/Xe thể thao" selected=car.vehicle_segment === "Siêu xe/Xe thể thao") Siêu xe/Xe thể thao
+                    option(value="Siêu sang cỡ lớn" selected=car.vehicle_segment === "Siêu sang cỡ lớn") Siêu sang cỡ lớn
+            
+            div(class="form-group")
+                label(for="description") Mô tả
+                textarea(
+                    class="form-control"
+                    id="description"
+                    name="description"
+                    rows="5"
+                ) #{car.description}
+
+            div(class="form-group")
+                label(for="engine") Động cơ
+                input(type="text" class="form-control" id="engine" name="engine" value=car.engine)
+
+            div(class="form-group")
+                label(for="price") Giá niêm yết
+                input(type="text" class="form-control" id="price" name="price" value=car.price)
+
+            div(class="form-group" upload-image)
+                label(for="imageUrl") Hình ảnh
+                input(
+                    type="file" 
+                    class="form-control-file" 
+                    id="imageUrl" 
+                    name="imageUrl" 
+                    accept="image/*" 
+                    multiple
+                    upload-image-input
+                )
+            div(class="box-image-preview" upload-images-preview data-existing-images=JSON.stringify(car.imageUrl)) 
+    
+
+            div(class="row" style="margin-bottom: 100px;")
+                div(class="col-5" style="height: 500px")
+                    // Thông số kỹ thuật - Động cơ/hộp số
+                    h2 Động cơ/hộp số
+                    div(class="overflow-auto border" style="max-height: 500px; padding-left: 15px;" )
+                        div(class="form-group")
+                            label(for="kieuDongCo") Kiểu động cơ
+                            input(type="text" class="form-control" id="kieuDongCo" name="kieuDongCo" value=car.kieuDongCo)
+
+                        div(class="form-group")
+                            label(for="dungTich") Dung tích
+                            input(type="text" class="form-control" id="dungTich" name="dungTich" value=car.dungTich)
+
+                        div(class="form-group")
+                            label(for="congSuat") Công suất
+                            input(type="text" class="form-control" id="congSuat" name="congSuat" value=car.congSuat)
+
+                        div(class="form-group")
+                            label(for="momenXoan") Mô-men xoắn
+                            input(type="text" class="form-control" id="momenXoan" name="momenXoan" value=car.momenXoan)
+
+                        div(class="form-group")
+                            label(for="hopso") Hộp số
+                            input(type="text" class="form-control" id="hopso" name="hopso" value=car.hopso)
+
+                        div(class="form-group")
+                            label(for="heDanDong") Hệ dẫn động
+                            input(type="text" class="form-control" id="heDanDong" name="heDanDong" value=car.heDanDong)
+
+                        div(class="form-group")
+                            label(for="loaiNhienLieu") Loại nhiên liệu
+                            input(type="text" class="form-control" id="loaiNhienLieu" name="loaiNhienLieu" value=car.loaiNhienLieu)
+
+                        div(class="form-group")
+                            label(for="mucTieuThuNhienLieu") Mức tiêu thụ nhiên liệu
+                            input(type="text" class="form-control" id="mucTieuThuNhienLieu" name="mucTieuThuNhienLieu" value=car.mucTieuThuNhienLieu)
+
+                div(class="col-2")
+                div(class="col-5" style="height: 500px")
+                    // Thông số kỹ thuật - Kích thước/Trọng lượng
+                    h2 Kích thước/Trọng lượng
+                    div(class="overflow-auto border" style="max-height: 500px; padding-left: 15px;" )
+                        div(class="form-group")
+                            label(for="soCho") Số chỗ
+                            input(type="text" class="form-control" id="soCho" name="soCho" value=car.soCho)
+
+                        div(class="form-group")
+                            label(for="kichThuoc") Kích thước
+                            input(type="text" class="form-control" id="kichThuoc" name="kichThuoc" value=car.kichThuoc)
+
+                        div(class="form-group")
+                            label(for="chieuDaiCoSo") Chiều dài cơ sở
+                            input(type="text" class="form-control" id="chieuDaiCoSo" name="chieuDaiCoSo" value=car.chieuDaiCoSo)
+
+                        div(class="form-group")
+                            label(for="khoangSangGam") Khoảng sáng gầm
+                            input(type="text" class="form-control" id="khoangSangGam" name="khoangSangGam" value=car.khoangSangGam)
+
+                        div(class="form-group")
+                            label(for="banKinhVongQuay") Bán kính vòng quay
+                            input(type="text" class="form-control" id="banKinhVongQuay" name="banKinhVongQuay" value=car.banKinhVongQuay)
+
+                        div(class="form-group")
+                            label(for="theTichKhoangHanhLy") Thể tích khoang hành lý
+                            input(type="text" class="form-control" id="theTichKhoangHanhLy" name="theTichKhoangHanhLy" value=car.theTichKhoangHanhLy)
+
+                        div(class="form-group")
+                            label(for="dungTichBinhNhienLieu") Dung tích bình nhiên liệu
+                            input(type="text" class="form-control" id="dungTichBinhNhienLieu" name="dungTichBinhNhienLieu" value=car.dungTichBinhNhienLieu)
+
+                        div(class="form-group")
+                            label(for="trongLuongBanThan") Trọng lượng bản thân
+                            input(type="text" class="form-control" id="trongLuongBanThan" name="trongLuongBanThan" value=car.trongLuongBanThan)
+
+                        div(class="form-group")
+                            label(for="trongLuongToanTai") Trọng lượng toàn tải
+                            input(type="text" class="form-control" id="trongLuongToanTai" name="trongLuongToanTai" value=car.trongLuongToanTai)
+
+                        div(class="form-group")
+                            label(for="lop_lazang") Lốp/lazang
+                            input(type="text" class="form-control" id="lop_lazang" name="lop_lazang" value=car.lop_lazang)
+
+            h2 Hệ thống treo phanh 
+            div(class="form-group")
+                label(for="treoTruoc") Treo trước
+                .row
+                    div(class="col-md-8")
+                        input(type="text" class="form-control" id="treoTruoc" name="treoTruoc" value=car.treoTruoc)
+                    div(class="col-md-4 d-flex align-items-center")
+                        .custom-control.custom-switch
+                            input(type="checkbox" class="custom-control-input" id="treoTruoc_checked" name="treoTruoc_checked")
+                            label(class="custom-control-label" for="treoTruoc_checked")
+
+            div(class="form-group")
+                label(for="treoSau") Treo sau
+                .row
+                    div(class="col-md-8")
+                        input(type="text" class="form-control" id="treoSau" name="treoSau" value=car.treoSau)
+                    div(class="col-md-4 d-flex align-items-center")
+                        .custom-control.custom-switch
+                            input(type="checkbox" class="custom-control-input" id="treoSau_checked" name="treoSau_checked")
+                            label(class="custom-control-label" for="treoSau_checked")
+
+            div(class="form-group")
+                label(for="phanhTruoc") Phanh trước
+                .row
+                    div(class="col-md-8")
+                        input(type="text" class="form-control" id="phanhTruoc" name="phanhTruoc" value=car.phanhTruoc)
+                    div(class="col-md-4 d-flex align-items-center")
+                        .custom-control.custom-switch
+                            input(type="checkbox" class="custom-control-input" id="phanhTruoc_checked" name="phanhTruoc_checked")
+                            label(class="custom-control-label" for="phanhTruoc_checked")
+
+            div(class="form-group")
+                label(for="phanhSau") Phanh sau
+                .row
+                    div(class="col-md-8")
+                        input(type="text" class="form-control" id="phanhSau" name="phanhSau" value=car.phanhTruoc)
+                    div(class="col-md-4 d-flex align-items-center")
+                        .custom-control.custom-switch
+                            input(type="checkbox" class="custom-control-input" id="phanhSau_checked" name="phanhSau_checked")
+                            label(class="custom-control-label" for="phanhSau_checked")
+            
+            div(class="row" style="margin-bottom: 100px;")
+                div(class="col-5" style="height: 500px")
+                    // Ngoại thất
+                    h2(NgoaiThat) Ngoại thất
+                    div(class="overflow-auto border" style="max-height: 500px; padding-left: 15px;" )
+                        // Đèn phanh trên cao
+                        div(class="form-group")
+                            label(for="denPhanhTrenCao") Đèn phanh trên cao
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="denPhanhTrenCao" name="denPhanhTrenCao" value=car.denPhanhTrenCao)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="denPhanhTrenCao_checked" name="denPhanhTrenCao_checked")
+                                        label(class="custom-control-label" for="denPhanhTrenCao_checked")
+
+                        // Gương chiếu hậu
+                        div(class="form-group")
+                            label(for="guongChieuHau") Gương chiếu hậu
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="guongChieuHau" name="guongChieuHau" value=car.guongChieuHau)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="guongChieuHau_checked" name="guongChieuHau_checked")
+                                        label(class="custom-control-label" for="guongChieuHau_checked")
+
+                        // Sấy gương chiếu hậu
+                        div(class="form-group")
+                            label(for="sayGuongChieuHau") Sấy gương chiếu hậu
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="sayGuongChieuHau" name="sayGuongChieuHau" value=car.sayGuongChieuHau)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="sayGuongChieuHau_checked" name="sayGuongChieuHau_checked")
+                                        label(class="custom-control-label" for="sayGuongChieuHau_checked")
+
+                        // Gạt mưa tự động
+                        div(class="form-group")
+                            label(for="gatMuaTuDong") Gạt mưa tự động
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="gatMuaTuDong" name="gatMuaTuDong" value=car.gatMuaTuDong)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="gatMuaTuDong_checked" name="gatMuaTuDong_checked")
+                                        label(class="custom-control-label" for="gatMuaTuDong_checked")
+
+                        // Đèn chiếu xa
+                        div(class="form-group")
+                            label(for="denChieuXa") Đèn chiếu xa
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="denChieuXa" name="denChieuXa" value=car.denChieuXa)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="denChieuXa_checked" name="denChieuXa_checked")
+                                        label(class="custom-control-label" for="denChieuXa_checked")
+
+                        // Đèn chiếu gần
+                        div(class="form-group")
+                            label(for="denChieuGan") Đèn chiếu gần
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="denChieuGan" name="denChieuGan" value=car.denChieuGan)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="denChieuGan_checked" name="denChieuGan_checked")
+                                        label(class="custom-control-label" for="denChieuGan_checked")
+                        // Đèn ban ngày
+                        div(class="form-group")
+                            label(for="denBanNgay") Đèn ban ngày
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="denBanNgay" name="denBanNgay" value=car.denBanNgay)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="denBanNgay_checked" name="denBanNgay_checked")
+                                        label(class="custom-control-label" for="denBanNgay_checked")
+
+                        // Đèn pha tự động bật/tắt
+                        div(class="form-group")
+                            label(for="denPhaTuDongBat_Tat") Đèn pha tự động bật/tắt
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="denPhaTuDongBat_Tat" name="denPhaTuDongBat_Tat" value=car.denPhaTuDongBat_Tat)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="denPhaTuDongBat_Tat_checked" name="denPhaTuDongBat_Tat_checked")
+                                        label(class="custom-control-label" for="denPhaTuDongBat_Tat_checked")
+
+                        // Đèn pha tự động xa/gần
+                        div(class="form-group")
+                            label(for="denPhaTuDongXa_Gan") Đèn pha tự động xa/gần
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="denPhaTuDongXa_Gan" name="denPhaTuDongXa_Gan" value=car.denPhaTuDongXa_Gan)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="denPhaTuDongXa_Gan_checked" name="denPhaTuDongXa_Gan_checked")
+                                        label(class="custom-control-label" for="denPhaTuDongXa_Gan_checked")
+
+                        // Đèn pha tự động điều chỉnh góc chiếu
+                        div(class="form-group")
+                            label(for="denPhaTuDongDieuChinhGocChieu") Đèn pha tự động điều chỉnh góc chiếu
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="denPhaTuDongDieuChinhGocChieu" name="denPhaTuDongDieuChinhGocChieu" value=car.denPhaTuDongDieuChinhGocChieu)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="denPhaTuDongDieuChinhGocChieu_checked" name="denPhaTuDongDieuChinhGocChieu_checked")
+                                        label(class="custom-control-label" for="denPhaTuDongDieuChinhGocChieu_checked")
+
+                        // Đèn hậu
+                        div(class="form-group")
+                            label(for="denHau") Đèn hậu
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="denHau" name="denHau" value=car.denHau)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="denHau_checked" name="denHau_checked")
+                                        label(class="custom-control-label" for="denHau_checked")
+
+                        // Ăng ten vây cá
+                        div(class="form-group")
+                            label(for="angTenVayCa") Ăng ten vây cá
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="angTenVayCa" name="angTenVayCa" value=car.angTenVayCa)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="angTenVayCa_checked" name="angTenVayCa_checked")
+                                        label(class="custom-control-label" for="angTenVayCa_checked")
+
+                        // Cốp động/mở điện
+                        div(class="form-group")
+                            label(for="copDong_MoDien") Cốp động/mở điện
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="copDong_MoDien" name="copDong_MoDien" value=car.copDong_MoDien)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="copDong_MoDien_checked" name="copDong_MoDien_checked")
+                                        label(class="custom-control-label" for="copDong_MoDien_checked")
+
+                        // Mở cốp rảnh tay
+                        div(class="form-group")
+                            label(for="moCopRanhTay") Mở cốp rảnh tay
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="moCopRanhTay" name="moCopRanhTay" value=car.moCopRanhTay)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="moCopRanhTay_checked" name="moCopRanhTay_checked")
+                                        label(class="custom-control-label" for="moCopRanhTay_checked")
+                div(class="col-2")
+                div(class="col-5" style="height: 500px")
+                    // Nội thất
+                    h2 Nội thất
+                    div(class="overflow-auto border" style="height: 500px; padding-left: 15px;")
+                        // Chất liệu bọc ghế
+                        div(class="form-group")
+                            label(for="chatLieuBocGhe") Chất liệu bọc ghế
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="chatLieuBocGhe" name="chatLieuBocGhe" value=car.chatLieuBocGhe) 
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="chatLieuBocGhe_checked" name="chatLieuBocGhe_checked")
+                                        label(class="custom-control-label" for="chatLieuBocGhe_checked")
+
+                        // Điều chỉnh ghế lái
+                        div(class="form-group")
+                            label(for="dieuChinhGheLai") Điều chỉnh ghế lái
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="dieuChinhGheLai" name="dieuChinhGheLai" value=car.dieuChinhGheLai) 
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="dieuChinhGheLai_checked" name="dieuChinhGheLai_checked")
+                                        label(class="custom-control-label" for="dieuChinhGheLai_checked")
+
+                        // Nhớ vị trí ghế lái
+                        div(class="form-group")
+                            label(for="nhoViTriGheLai") Nhớ vị trí ghế lái
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="nhoViTriGheLai" name="nhoViTriGheLai" value=car.nhoViTriGheLai)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="nhoViTriGheLai_checked" name="nhoViTriGheLai_checked")
+                                        label(class="custom-control-label" for="nhoViTriGheLai_checked")
+
+                        // Massage ghế lái
+                        div(class="form-group")
+                            label(for="massageGheLai") Massage ghế lái
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="massageGheLai" name="massageGheLai" value=car.massageGheLai)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="massageGheLai_checked" name="massageGheLai_checked")
+                                        label(class="custom-control-label" for="massageGheLai_checked")
+
+                        // Điều chỉnh ghế phụ
+                        div(class="form-group")
+                            label(for="dieuChinhGhePhu") Điều chỉnh ghế phụ
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="dieuChinhGhePhu" name="dieuChinhGhePhu" value=car.dieuChinhGhePhu)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="dieuChinhGhePhu_checked" name="dieuChinhGhePhu_checked")
+                                        label(class="custom-control-label" for="dieuChinhGhePhu_checked")
+
+                        // Massage ghế phụ
+                        div(class="form-group")
+                            label(for="massageGhePhu") Massage ghế phụ
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="massageGhePhu" name="massageGhePhu" value=car.massageGhePhu)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="massageGhePhu_checked" name="massageGhePhu_checked")
+                                        label(class="custom-control-label" for="massageGhePhu_checked")
+
+                        // Thông gió ghế lái
+                        div(class="form-group")
+                            label(for="thongGioGheLai") Thông gió ghế lái
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="thongGioGheLai" name="thongGioGheLai" value=car.thongGioGheLai)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="thongGioGheLai_checked" name="thongGioGheLai_checked")
+                                        label(class="custom-control-label" for="thongGioGheLai_checked")
+
+                        // Thông gió ghế phụ
+                        div(class="form-group")
+                            label(for="thongGioGhePhu") Thông gió ghế phụ
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="thongGioGhePhu" name="thongGioGhePhu" value=car.thongGioGhePhu)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="thongGioGhePhu_checked" name="thongGioGhePhu_checked")
+                                        label(class="custom-control-label" for="thongGioGhePhu_checked")
+
+                        // Sưởi ấm ghế lái
+                        div(class="form-group")
+                            label(for="suoiAmGheLai") Sưởi ấm ghế lái
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="suoiAmGheLai" name="suoiAmGheLai" value=car.suoiAmGheLai)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="suoiAmGheLai_checked" name="suoiAmGheLai_checked")
+                                        label(class="custom-control-label" for="suoiAmGheLai_checked")
+
+                        // Sưởi ấm ghế phụ
+                        div(class="form-group")
+                            label(for="suoiAmGhePhu") Sưởi ấm ghế phụ
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="suoiAmGhePhu" name="suoiAmGhePhu" value=car.suoiAmGhePhu)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="suoiAmGhePhu_checked" name="suoiAmGhePhu_checked")
+                                        label(class="custom-control-label" for="suoiAmGhePhu_checked")
+
+                        // Bảng đồng hồ tài xế
+                        div(class="form-group")
+                            label(for="bangDongHoTaiXe") Bảng đồng hồ tài xế
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="bangDongHoTaiXe" name="bangDongHoTaiXe" value=car.bangDongHoTaiXe)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="bangDongHoTaiXe_checked" name="bangDongHoTaiXe_checked")
+                                        label(class="custom-control-label" for="bangDongHoTaiXe_checked")
+
+                        // Nút bấm tích hợp trên vô lăng
+                        div(class="form-group")
+                            label(for="nutBamTichHopTrenVolang") Nút bấm tích hợp trên vô lăng
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="nutBamTichHopTrenVolang" name="nutBamTichHopTrenVolang" value=car.nutBamTichHopTrenVolang)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="nutBamTichHopTrenVolang_checked" name="nutBamTichHopTrenVolang_checked")
+                                        label(class="custom-control-label" for="nutBamTichHopTrenVolang_checked")
+
+                        // Chất liệu bọc vô lăng
+                        div(class="form-group")
+                            label(for="chatLieuBocVoLang") Chất liệu bọc vô lăng
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="chatLieuBocVoLang" name="chatLieuBocVoLang" value=car.chatLieuBocVoLang)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="chatLieuBocVoLang_checked" name="chatLieuBocVoLang_checked")
+                                        label(class="custom-control-label" for="chatLieuBocVoLang_checked")
+
+                        // Chìa khóa thông minh
+                        div(class="form-group")
+                            label(for="chiaKhoaThongMinh") Chìa khóa thông minh
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="chiaKhoaThongMinh" name="chiaKhoaThongMinh" value=car.chiaKhoaThongMinh)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="chiaKhoaThongMinh_checked" name="chiaKhoaThongMinh_checked")
+                                        label(class="custom-control-label" for="chiaKhoaThongMinh_checked")
+
+                        // Khởi động nút bấm
+                        div(class="form-group")
+                            label(for="khoiDongNutBam") Khởi động nút bấm
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="khoiDongNutBam" name="khoiDongNutBam" value=car.khoiDongNutBam)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="khoiDongNutBam_checked" name="khoiDongNutBam_checked")
+                                        label(class="custom-control-label" for="khoiDongNutBam_checked")
+
+                        // Điều hòa
+                        div(class="form-group")
+                            label(for="dieuHoa") Điều hòa
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="dieuHoa" name="dieuHoa" value=car.dieuHoa)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="dieuHoa_checked" name="dieuHoa_checked")
+                                        label(class="custom-control-label" for="dieuHoa_checked")
+
+                        // Cửa gió hạng ghế sau
+                        div(class="form-group")
+                            label(for="cuaGioHangGheSau") Cửa gió hạng ghế sau
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="cuaGioHangGheSau" name="cuaGioHangGheSau" value=car.cuaGioHangGheSau)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="cuaGioHangGheSau_checked" name="cuaGioHangGheSau_checked")
+                                        label(class="custom-control-label" for="cuaGioHangGheSau_checked")
+
+                        // Cửa kính một chạm
+                        div(class="form-group")
+                            label(for="cuaKinhMotCham") Cửa kính một chạm
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="cuaKinhMotCham" name="cuaKinhMotCham" value=car.cuaKinhMotCham)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="cuaKinhMotCham_checked" name="cuaKinhMotCham_checked")
+                                        label(class="custom-control-label" for="cuaKinhMotCham_checked")
+
+                        // Cửa sổ trời
+                        div(class="form-group")
+                            label(for="cuaSoTroi") Cửa sổ trời
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="cuaSoTroi" name="cuaSoTroi" value=car.cuaSoTroi)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="cuaSoTroi_checked" name="cuaSoTroi_checked")
+                                        label(class="custom-control-label" for="cuaSoTroi_checked")
+
+                        // Cửa sổ trời toàn cảnh
+                        div(class="form-group")
+                            label(for="cuaSoTroiToanCanh") Cửa sổ trời toàn cảnh
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="cuaSoTroiToanCanh" name="cuaSoTroiToanCanh" value=car.cuaSoTroiToanCanh)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="cuaSoTroiToanCanh_checked" name="cuaSoTroiToanCanh_checked")
+                                        label(class="custom-control-label" for="cuaSoTroiToanCanh_checked")
+
+                        // Gương chiếu hậu trong xe chống chói tự động
+                        div(class="form-group")
+                            label(for="guongChieuHauTrongXeChongChoiTuDong") Gương chiếu hậu trong xe chống chói tự động
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="guongChieuHauTrongXeChongChoiTuDong" name="guongChieuHauTrongXeChongChoiTuDong" value=car.guongChieuHauTrongXeChongChoiTuDong)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="guongChieuHauTrongXeChongChoiTuDong_checked" name="guongChieuHauTrongXeChongChoiTuDong_checked")
+                                        label(class="custom-control-label" for="guongChieuHauTrongXeChongChoiTuDong_checked")
+
+                        // Tựa tay hàng ghế trước
+                        div(class="form-group")
+                            label(for="tuaTayHangGheTruoc") Tựa tay hàng ghế trước
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="tuaTayHangGheTruoc" name="tuaTayHangGheTruoc" value=car.tuaTayHangGheTruoc)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="tuaTayHangGheTruoc_checked" name="tuaTayHangGheTruoc_checked")
+                                        label(class="custom-control-label" for="tuaTayHangGheTruoc_checked")
+
+                        // Tựa tay hàng ghế sau
+                        div(class="form-group")
+                            label(for="tuaTayHangGheSau") Tựa tay hàng ghế sau
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="tuaTayHangGheSau" name="tuaTayHangGheSau" value=car.tuaTayHangGheSau)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="tuaTayHangGheSau_checked" name="tuaTayHangGheSau_checked")
+                                        label(class="custom-control-label" for="tuaTayHangGheSau_checked")
+
+                        // Màn hình giải trí
+                        div(class="form-group")
+                            label(for="manHinhGiaiTri") Màn hình giải trí
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="manHinhGiaiTri" name="manHinhGiaiTri" value=car.manHinhGiaiTri)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="manHinhGiaiTri_checked" name="manHinhGiaiTri_checked")
+                                        label(class="custom-control-label" for="manHinhGiaiTri_checked")
+
+                        // Kết nối Apple CarPlay
+                        div(class="form-group")
+                            label(for="ketNoiAppleCarPlay") Kết nối Apple CarPlay
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="ketNoiAppleCarPlay" name="ketNoiAppleCarPlay" value=car.ketNoiAppleCarPlay)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="ketNoiAppleCarPlay_checked" name="ketNoiAppleCarPlay_checked")
+                                        label(class="custom-control-label" for="ketNoiAppleCarPlay_checked")
+
+                        // Kết nối Android Auto
+                        div(class="form-group")
+                            label(for="ketNoiAndroidAuto") Kết nối Android Auto
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="ketNoiAndroidAuto" name="ketNoiAndroidAuto" value=car.ketNoiAndroidAuto)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="ketNoiAndroidAuto_checked" name="ketNoiAndroidAuto_checked")
+                                        label(class="custom-control-label" for="ketNoiAndroidAuto_checked")
+
+                        // Ra lệnh giọng nói
+                        div(class="form-group")
+                            label(for="raLenhGiongNoi") Ra lệnh giọng nói
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="raLenhGiongNoi" name="raLenhGiongNoi" value=car.raLenhGiongNoi)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="raLenhGiongNoi_checked" name="raLenhGiongNoi_checked")
+                                        label(class="custom-control-label" for="raLenhGiongNoi_checked")
+
+                        // Đàm thoại rảnh tay
+                        div(class="form-group")
+                            label(for="damThoaiRanhTay") Đàm thoại rảnh tay
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="damThoaiRanhTay" name="damThoaiRanhTay" value=car.damThoaiRanhTay)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="damThoaiRanhTay_checked" name="damThoaiRanhTay_checked")
+                                        label(class="custom-control-label" for="damThoaiRanhTay_checked")
+
+                        // Hệ thống loa
+                        div(class="form-group")
+                            label(for="heThongLoa") Hệ thống loa
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="heThongLoa" name="heThongLoa" value=car.heThongLoa)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="heThongLoa_checked" name="heThongLoa_checked")
+                                        label(class="custom-control-label" for="heThongLoa_checked")
+
+                        // Phát Wifi
+                        div(class="form-group")
+                            label(for="phatWifi") Phát Wifi
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="phatWifi" name="phatWifi" value=car.phatWifi)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="phatWifi_checked" name="phatWifi_checked")
+                                        label(class="custom-control-label" for="phatWifi_checked")
+
+                        // Kết nối AUX
+                        div(class="form-group")
+                            label(for="ketNoiAUX") Kết nối AUX
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="ketNoiAUX" name="ketNoiAUX" value=car.ketNoiAUX)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="ketNoiAUX_checked" name="ketNoiAUX_checked")
+                                        label(class="custom-control-label" for="ketNoiAUX_checked")
+
+                        // Kết nối USB
+                        div(class="form-group")
+                            label(for="ketNoiUSB") Kết nối USB
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="ketNoiUSB" name="ketNoiUSB" value=car.ketNoiUSB)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="ketNoiUSB_checked" name="ketNoiUSB_checked")
+                                        label(class="custom-control-label" for="ketNoiUSB_checked")
+
+                        // Kết nối Bluetooth
+                        div(class="form-group")
+                            label(for="ketNoiBluetooth") Kết nối Bluetooth
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="ketNoiBluetooth" name="ketNoiBluetooth" value=car.ketNoiBluetooth)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="ketNoiBluetooth_checked" name="ketNoiBluetooth_checked")
+                                        label(class="custom-control-label" for="ketNoiBluetooth_checked")
+
+                        // Radio AM/FM
+                        div(class="form-group")
+                            label(for="radioAM_FM") Radio AM/FM
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="radioAM_FM" name="radioAM_FM" value=car.radioAM_FM)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="radioAM_FM_checked" name="radioAM_FM_checked")
+                                        label(class="custom-control-label" for="radioAM_FM_checked")
+
+                        // Sạc không dây
+                        div(class="form-group")
+                            label(for="sacKhongDay") Sạc không dây
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="sacKhongDay" name="sacKhongDay" value=car.sacKhongDay)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="sacKhongDay_checked" name="sacKhongDay_checked")
+                                        label(class="custom-control-label" for="sacKhongDay_checked")
+            div(class="row" style="margin-bottom: 100px;")
+                div(class="col-5" style="height: 500px")
+                    // Hỗ trợ vận hành
+                    h2 Hỗ trợ vận hành
+                    div(class="overflow-auto border" style="max-height: 500px; padding-left: 15px;")
+                        // Trợ lực vô lăng
+                        div(class="form-group")
+                            label(for="troLucVoLang") Trợ lực vô lăng
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="troLucVoLang" name="troLucVoLang" value=car.troLucVoLang)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="troLucVoLang_checked" name="troLucVoLang_checked")
+                                        label(class="custom-control-label" for="troLucVoLang_checked")
+
+                        // Nhiều chế độ lái
+                        div(class="form-group")
+                            label(for="nhieuCheDoLai") Nhiều chế độ lái
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="nhieuCheDoLai" name="nhieuCheDoLai" value=car.nhieuCheDoLai)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="nhieuCheDoLai_checked" name="nhieuCheDoLai_checked")
+                                        label(class="custom-control-label" for="nhieuCheDoLai_checked")
+
+                        // Lẫy chuyển số trên vô lăng
+                        div(class="form-group")
+                            label(for="layChuyenSoTrenVoLang") Lẫy chuyển số trên vô lăng
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="layChuyenSoTrenVoLang" name="layChuyenSoTrenVoLang" value=car.layChuyenSoTrenVoLang)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="layChuyenSoTrenVoLang_checked" name="layChuyenSoTrenVoLang_checked")
+                                        label(class="custom-control-label" for="layChuyenSoTrenVoLang_checked")
+
+                        // Kiểm soát gia tốc
+                        div(class="form-group")
+                            label(for="kiemSoatGiaToc") Kiểm soát gia tốc
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="kiemSoatGiaToc" name="kiemSoatGiaToc" value=car.kiemSoatGiaToc)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="kiemSoatGiaToc_checked" name="kiemSoatGiaToc_checked")
+                                        label(class="custom-control-label" for="kiemSoatGiaToc_checked")
+
+                        // Phanh tay điện tử
+                        div(class="form-group")
+                            label(for="phanhTayDienTu") Phanh tay điện tử
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="phanhTayDienTu" name="phanhTayDienTu" value=car.phanhTayDienTu) 
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="phanhTayDienTu_checked" name="phanhTayDienTu_checked")
+                                        label(class="custom-control-label" for="phanhTayDienTu_checked")
+
+                        // Giữ phanh tự động
+                        div(class="form-group")
+                            label(for="giuPhanhTuDong") Giữ phanh tự động
+                            .row
+                                div(class="col-md-10")
+                                    input(type="text" class="form-control" id="giuPhanhTuDong" name="giuPhanhTuDong" value=car.giuPhanhTuDong)
+                                div(class="col-md-2 d-flex align-items-center")
+                                    .custom-control.custom-switch
+                                        input(type="checkbox" class="custom-control-input" id="giuPhanhTuDong_checked" name="giuPhanhTuDong_checked")
+                                        label(class="custom-control-label" for="giuPhanhTuDong_checked")
+                div(class="col-2")
+                div(class="col-5" style="height: 500px")
+                        // Công nghệ an toàn
+                        h2(CongNgheAnToan) Công nghệ an toàn
+                        div(class="overflow-auto border" style="max-height: 500px; padding-left: 15px;")
+                            // Kiểm soát hành trình
+                            div(class="form-group")
+                                label(for="kiemSoatHanhTrinh") Kiểm soát hành trình
+                                .row
+                                    div(class="col-md-10")
+                                        input(type="text" class="form-control" id="kiemSoatHanhTrinh" name="kiemSoatHanhTrinh" value=car.kiemSoatHanhTrinh)
+                                    div(class="col-md-2 d-flex align-items-center")
+                                        .custom-control.custom-switch
+                                            input(type="checkbox" class="custom-control-input" id="kiemSoatHanhTrinh_checked" name="kiemSoatHanhTrinh_checked")
+                                            label(class="custom-control-label" for="kiemSoatHanhTrinh_checked")
+
+                            // Kiểm soát hành trình thích ứng
+                            div(class="form-group")
+                                label(for="kiemSoatHanhTrinhThichUng") Kiểm soát hành trình thích ứng
+                                .row
+                                    div(class="col-md-10")
+                                        input(type="text" class="form-control" id="kiemSoatHanhTrinhThichUng" name="kiemSoatHanhTrinhThichUng" value=car.kiemSoatHanhTrinhThichUng)
+                                    div(class="col-md-2 d-flex align-items-center")
+                                        .custom-control.custom-switch
+                                            input(type="checkbox" class="custom-control-input" id="kiemSoatHanhTrinhThichUng_checked" name="kiemSoatHanhTrinhThichUng_checked")
+                                            label(class="custom-control-label" for="kiemSoatHanhTrinhThichUng_checked")
+
+                            // Cảnh báo phương tiện cắt ngang khi lùi
+                            div(class="form-group")
+                                label(for="canhBaoPhuongTienCatNgangKhiLui") Cảnh báo phương tiện cắt ngang khi lùi
+                                .row
+                                    div(class="col-md-10")
+                                        input(type="text" class="form-control" id="canhBaoPhuongTienCatNgangKhiLui" name="canhBaoPhuongTienCatNgangKhiLui" value=car.canhBaoPhuongTienCatNgangKhiLui)
+                                    div(class="col-md-2 d-flex align-items-center")
+                                        .custom-control.custom-switch
+                                            input(type="checkbox" class="custom-control-input" id="canhBaoPhuongTienCatNgangKhiLui_checked" name="canhBaoPhuongTienCatNgangKhiLui_checked")
+                                            label(class="custom-control-label" for="canhBaoPhuongTienCatNgangKhiLui_checked")
+
+                            // Cảnh báo tài xế buồn ngủ
+                            div(class="form-group")
+                                label(for="canhBaoTaiXeBuonNgu") Cảnh báo tài xế buồn ngủ
+                                .row
+                                    div(class="col-md-10")
+                                        input(type="text" class="form-control" id="canhBaoTaiXeBuonNgu" name="canhBaoTaiXeBuonNgu" value=car.canhBaoTaiXeBuonNgu)
+                                    div(class="col-md-2 d-flex align-items-center")
+                                        .custom-control.custom-switch
+                                            input(type="checkbox" class="custom-control-input" id="canhBaoTaiXeBuonNgu_checked" name="canhBaoTaiXeBuonNgu_checked")
+                                            label(class="custom-control-label" for="canhBaoTaiXeBuonNgu_checked")
+
+                            // Ghế an toàn cho trẻ em Isofix
+                            div(class="form-group")
+                                label(for="mocGheAnToanChoTreEmIsofix") Ghế an toàn cho trẻ em Isofix
+                                .row
+                                    div(class="col-md-10")
+                                        input(type="text" class="form-control" id="mocGheAnToanChoTreEmIsofix" name="mocGheAnToanChoTreEmIsofix" value=car.mocGheAnToanChoTreEmIsofix)
+                                    div(class="col-md-2 d-flex align-items-center")
+                                        .custom-control.custom-switch
+                                            input(type="checkbox" class="custom-control-input" id="mocGheAnToanChoTreEmIsofix_checked" name="mocGheAnToanChoTreEmIsofix_checked")
+                                            label(class="custom-control-label" for="mocGheAnToanChoTreEmIsofix_checked")
+
+                            // Hỗ trợ đổ đèo
+                            div(class="form-group")
+                                label(for="hoTroDoDeo") Hỗ trợ đổ đèo
+                                .row
+                                    div(class="col-md-10")
+                                        input(type="text" class="form-control" id="hoTroDoDeo" name="hoTroDoDeo" value=car.hoTroDoDeo)
+                                    div(class="col-md-2 d-flex align-items-center")
+                                        .custom-control.custom-switch
+                                            input(type="checkbox" class="custom-control-input" id="hoTroDoDeo_checked" name="hoTroDoDeo_checked")
+                                            label(class="custom-control-label" for="hoTroDoDeo_checked")
+
+                            // Cảnh báo điểm mù
+                            div(class="form-group")
+                                label(for="canhBaoDiemMu") Cảnh báo điểm mù
+                                .row
+                                    div(class="col-md-10")
+                                        input(type="text" class="form-control" id="canhBaoDiemMu" name="canhBaoDiemMu" value=car.canhBaoDiemMu)
+                                    div(class="col-md-2 d-flex align-items-center")
+                                        .custom-control.custom-switch
+                                            input(type="checkbox" class="custom-control-input" id="canhBaoDiemMu_checked" name="canhBaoDiemMu_checked")
+                                            label(class="custom-control-label" for="canhBaoDiemMu_checked")
+
+                            // Camera lùi
+                            div(class="form-group")
+                                label(for="cameraLui") Camera lùi
+                                .row
+                                    div(class="col-md-10")
+                                        input(type="text" class="form-control" id="cameraLui" name="cameraLui" value=car.cameraLui)
+                                    div(class="col-md-2 d-flex align-items-center")
+                                        .custom-control.custom-switch
+                                            input(type="checkbox" class="custom-control-input" id="cameraLui_checked" name="cameraLui_checked")
+                                            label(class="custom-control-label" for="cameraLui_checked")
+
+                            // Camera 360
+                            div(class="form-group")
+                                label(for="camera360") Camera 360
+                                .row
+                                    div(class="col-md-10")
+                                        input(type="text" class="form-control" id="camera360" name="camera360" value=car.camera360)
+                                    div(class="col-md-2 d-flex align-items-center")
+                                        .custom-control.custom-switch
+                                            input(type="checkbox" class="custom-control-input" id="camera360_checked" name="camera360_checked")
+                                            label(class="custom-control-label" for="camera360_checked")
+
+                            // Camera quan sát làn đường
+                            div(class="form-group")
+                                label(for="cameraQuanSatLanDuong") Camera quan sát làn đường
+                                .row
+                                    div(class="col-md-10")
+                                        input(type="text" class="form-control" id="cameraQuanSatLanDuong" name="cameraQuanSatLanDuong" value=car.cameraQuanSatLanDuong)
+                                    div(class="col-md-2 d-flex align-items-center")
+                                        .custom-control.custom-switch
+                                            input(type="checkbox" class="custom-control-input" id="cameraQuanSatLanDuong_checked" name="cameraQuanSatLanDuong_checked")
+                                            label(class="custom-control-label" for="cameraQuanSatLanDuong_checked")
+
+                            // Cảnh báo lệch làn đường
+                            div(class="form-group")
+                                label(for="canhBaoChechLanDuong") Cảnh báo lệch làn đường
+                                .row
+                                    div(class="col-md-10")
+                                        input(type="text" class="form-control" id="canhBaoChechLanDuong" name="canhBaoChechLanDuong" value=car.canhBaoChechLanDuong)
+                                    div(class="col-md-2 d-flex align-items-center")
+                                        .custom-control.custom-switch
+                                            input(type="checkbox" class="custom-control-input" id="canhBaoChechLanDuong_checked" name="canhBaoChechLanDuong_checked")
+                                            label(class="custom-control-label" for="canhBaoChechLanDuong_checked")
+
+                            // Hỗ trợ giữ làn
+                            div(class="form-group")
+                                label(for="hoTroGiuLan") Hỗ trợ giữ làn
+                                .row
+                                    div(class="col-md-10")
+                                        input(type="text" class="form-control" id="hoTroGiuLan" name="hoTroGiuLan" value=car.hoTroGiuLan)
+                                    div(class="col-md-2 d-flex align-items-center")
+                                        .custom-control.custom-switch
+                                            input(type="checkbox" class="custom-control-input" id="hoTroGiuLan_checked" name="hoTroGiuLan_checked")
+                                            label(class="custom-control-label" for="hoTroGiuLan_checked")
+
+                            // Hỗ trợ phanh tự động giảm thiểu va chạm
+                            div(class="form-group")
+                                label(for="hoTroPhanhTuDongGiamThieuVaCham") Hỗ trợ phanh tự động giảm thiểu va chạm
+                                .row
+                                    div(class="col-md-10")
+                                        input(type="text" class="form-control" id="hoTroPhanhTuDongGiamThieuVaCham" name="hoTroPhanhTuDongGiamThieuVaCham" value=car.hoTroPhanhTuDongGiamThieuVaCham)
+                                    div(class="col-md-2 d-flex align-items-center")
+                                        .custom-control.custom-switch
+                                            input(type="checkbox" class="custom-control-input" id="hoTroPhanhTuDongGiamThieuVaCham_checked" name="hoTroPhanhTuDongGiamThieuVaCham_checked")
+                                            label(class="custom-control-label" for="hoTroPhanhTuDongGiamThieuVaCham_checked")
+
+                            // Phân phối lực phanh điện tử
+                            div(class="form-group")
+                                label(for="phanPhoiLucPhanhDienTu") Phân phối lực phanh điện tử
+                                .row
+                                    div(class="col-md-10")
+                                        input(type="text" class="form-control" id="phanPhoiLucPhanhDienTu" name="phanPhoiLucPhanhDienTu" value=car.phanPhoiLucPhanhDienTu)
+                                    div(class="col-md-2 d-flex align-items-center")
+                                        .custom-control.custom-switch
+                                            input(type="checkbox" class="custom-control-input" id="phanPhoiLucPhanhDienTu_checked" name="phanPhoiLucPhanhDienTu_checked")
+                                            label(class="custom-control-label" for="phanPhoiLucPhanhDienTu_checked")
+
+                            // Cân bằng điện tử
+                            div(class="form-group")
+                                label(for="canBangDienTu") Cân bằng điện tử
+                                .row
+                                    div(class="col-md-10")
+                                        input(type="text" class="form-control" id="canBangDienTu" name="canBangDienTu" value=car.canBangDienTu)
+                                    div(class="col-md-2 d-flex align-items-center")
+                                        .custom-control.custom-switch
+                                            input(type="checkbox" class="custom-control-input" id="canBangDienTu_checked" name="canBangDienTu_checked")
+                                            label(class="custom-control-label" for="canBangDienTu_checked")
+
+                            // Kiểm soát lực kéo
+                            div(class="form-group")
+                                label(for="kiemSoatLucKeo") Kiểm soát lực kéo
+                                .row
+                                    div(class="col-md-10")
+                                        input(type="text" class="form-control" id="kiemSoatLucKeo" name="kiemSoatLucKeo" value=car.kiemSoatLucKeo) 
+                                    div(class="col-md-2 d-flex align-items-center")
+                                        .custom-control.custom-switch
+                                            input(type="checkbox" class="custom-control-input" id="kiemSoatLucKeo_checked" name="kiemSoatLucKeo_checked")
+                                            label(class="custom-control-label" for="kiemSoatLucKeo_checked")
+
+                            // Hỗ trợ khởi hành ngang dốc
+                            div(class="form-group")
+                                label(for="hoTroKhoiHanhNgangDoc") Hỗ trợ khởi hành ngang dốc
+                                .row
+                                    div(class="col-md-10")
+                                        input(type="text" class="form-control" id="hoTroKhoiHanhNgangDoc" name="hoTroKhoiHanhNgangDoc" value=car.hoTroKhoiHanhNgangDoc)
+                                    div(class="col-md-2 d-flex align-items-center")
+                                        .custom-control.custom-switch
+                                            input(type="checkbox" class="custom-control-input" id="hoTroKhoiHanhNgangDoc_checked" name="hoTroKhoiHanhNgangDoc_checked")
+                                            label(class="custom-control-label" for="hoTroKhoiHanhNgangDoc_checked")
+
+                            // Số túi khí
+                            div(class="form-group")
+                                label(for="soTuiKhi") Số túi khí
+                                .row
+                                    div(class="col-md-10")
+                                        input(type="text" class="form-control" id="soTuiKhi" name="soTuiKhi" value=car.soTuiKhi)
+                                    div(class="col-md-2 d-flex align-items-center")
+                                        .custom-control.custom-switch
+                                            input(type="checkbox" class="custom-control-input" id="soTuiKhi_checked" name="soTuiKhi_checked")
+                                            label(class="custom-control-label" for="soTuiKhi_checked")
+
+                            // Chống bó cứng phanh
+                            div(class="form-group")
+                                label(for="chongBoCungPhanh") Chống bó cứng phanh
+                                .row
+                                    div(class="col-md-10")
+                                        input(type="text" class="form-control" id="chongBoCungPhanh" name="chongBoCungPhanh" value=car.chongBoCungPhanh)
+                                    div(class="col-md-2 d-flex align-items-center")
+                                        .custom-control.custom-switch
+                                            input(type="checkbox" class="custom-control-input" id="chongBoCungPhanh_checked" name="chongBoCungPhanh_checked")
+                                            label(class="custom-control-label" for="chongBoCungPhanh_checked")
+
+                            // Hỗ trợ lực phanh khẩn cấp
+                            div(class="form-group")
+                                label(for="hoTroLucPhanhKhanCap") Hỗ trợ lực phanh khẩn cấp
+                                .row
+                                    div(class="col-md-10")
+                                        input(type="text" class="form-control" id="hoTroLucPhanhKhanCap" name="hoTroLucPhanhKhanCap" value=car.hoTroLucPhanhKhanCap)
+                                    div(class="col-md-2 d-flex align-items-center")
+                                        .custom-control.custom-switch
+                                            input(type="checkbox" class="custom-control-input" id="hoTroLucPhanhKhanCap_checked" name="hoTroLucPhanhKhanCap_checked")
+                                            label(class="custom-control-label" for="hoTroLucPhanhKhanCap_checked")
+        div(class="form-group")
+            button(
+                type="submit"
+                class="btn btn-primary"
+            ) Cập nhật
+
+    script(src="/admin/js/product.js")

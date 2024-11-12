@@ -1,0 +1,40 @@
+mixin filterForm(filters, brands)
+    form(
+        action=`${prefixAdmin}/car_items`
+        method="POST"
+        id="form-filter"
+    )
+        .row.mb-3
+            .col-3
+                label Hãng xe
+                select.form-control(name="brand")
+                    option(value="") Tất cả
+                    each brand in brands
+                        option(value=brand selected=(filters.brand === brand)) #{brand}
+            .col-3
+                label Phiên bản
+                select.form-control(name="version")
+                    option(value="") Tất cả
+                    option(value="Sedan") Sedan
+                    option(value="SUV") SUV
+                    option(value="Hatchback") Hatchback
+            .col-3
+                label Giá tối thiểu (Triệu VND)
+                input.form-control(
+                    type="number"
+                    name="minPrice"
+                    placeholder="Giá tối thiểu"
+                    value=filters.minPrice
+                )
+            .col-3
+                label Giá tối đa (Triệu VND)
+                input.form-control(
+                    type="number"
+                    name="maxPrice"
+                    placeholder="Giá tối đa"
+                    value=filters.maxPrice
+                )
+        .row
+            .col-12
+                button(type="submit" class="btn btn-primary") Lọc xe
+                a(href=`${prefixAdmin}/car_items` class="btn btn-secondary ml-2") Reset

@@ -1,0 +1,19 @@
+mixin form-multi(path)
+    form(
+        action=path
+        method="POST"
+        form-multi
+    )
+        .d-flex.align-items-start 
+            .form-group 
+                select(name="type" class="form-control")
+                    option(disabled selected) -- Chọn hành động --
+                    option(value="delete-multi") Xóa xe đã chọn
+            .form-group 
+                input(
+                    type="text"
+                    name="ids"
+                    value=""
+                    class="form-control d-none"
+                )
+            button(type="submit" class="btn btn-primary") Áp dụng

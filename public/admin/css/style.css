@@ -1,0 +1,409 @@
+/* Header */
+.header{
+    background-color: #202020;
+    padding: 10px 0;
+    position: sticky;
+    top: 0;
+    z-index: 999;
+}
+
+.header .inner-logo a{
+    font-size: 24px;
+    font-weight: 700;
+    color: #fff;
+}
+/*End header */
+
+/* Body */
+.body .sider{
+    width: 150px;
+    background-color: #323232;
+    color: #fff;
+    height: calc(100vh - 56px);
+    position: fixed;
+    top: 56px;
+    left: 0;
+}
+
+.body .main{
+    margin: 15px;
+    position: relative;
+    left: 150px;
+    width: calc(100% - 180px);
+}
+/*End Body */
+
+/* Sider */
+.sider .inner-menu ul{
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sider .inner-menu ul li a{
+    color: #fff;
+    display: block;
+    padding: 6px 10px;
+    border-bottom: 1px solid #515151;
+}
+/*End Sider */
+
+/* Show-alert */
+[show-alert]{
+    position: fixed;
+    top: 70px;
+    right: 15px;
+    z-index: 9999;
+}
+
+[show-alert].alert-hidden{
+    animation-name: alert-hidden;
+    animation-duration: 0.5s;
+    animation-fill-mode: both;
+}
+
+@keyframes alert-hidden {
+    from{
+        right: 15px;
+    }
+    to{
+        right: -100%;
+        display: none;
+    }
+}
+
+[show-alert] [close-alert]{
+    background-color: #ffffffc4;
+    display: inline-table;
+    width: 25px;
+    height: 25px;
+    line-height: 24px;
+    text-align: center;
+    align-items: center;
+    font-weight: 600;
+    border-radius: 50%;
+    cursor: pointer;
+}
+/*End Show-alert */
+
+/* Box-header-create */
+.box-header-create{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.box-header-create h1{
+    padding: 0;
+    margin-bottom: 0 !important;
+    margin-right: 20px;
+}
+.box-header-create .import-btn{
+    margin: 0 !important;
+}
+/*End Box-header-create */
+
+/*Image preview*/
+.box-image-preview{
+    position: relative;
+    display: inline-block; /* Giữ cho ảnh và nút 'x' luôn ở cùng nhau */
+}
+
+.image-preview {
+    height: 150px; /* Đặt chiều cao cố định */
+    object-fit: cover; /* Đảm bảo ảnh được thu nhỏ và căn chỉnh mà không biến dạng */
+    margin-top: 15px;
+    border: 1px solid #ddd;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.image-preview[src=""]{
+    display: none;
+}
+
+.close-upload-image{
+    cursor: pointer;
+    width: 25px;
+    height: 25px;
+    line-height: 20px;
+    background-color: #515151;
+    color: #ddd;
+    position: absolute;
+    top: 0px;
+    right: -5px;
+    border-radius: 50%;
+    text-align: center;
+    font-weight: bold;
+}
+/*End Image preview*/
+
+/* CSS cho modal */
+.modal {
+    display: none; 
+    position: fixed; 
+    z-index: 1; 
+    padding-top: 100px; 
+    left: 0;
+    top: 0;
+    width: 100%; 
+    height: 100%; 
+    overflow: auto; 
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 50%;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.close-modal {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close-modal:hover,
+.close-modal:focus {
+    color: #000;
+}
+/*End CSS cho modal */
+
+/* Css car infor */
+.mb-5, .my-5 {
+    margin-bottom: 20px !important;
+}
+.car-info {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #eaeaea;
+    border-radius: 5px;
+    max-width:100%;
+}
+
+.car-title {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.car-price-container,
+.car-segment-container {
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
+}
+
+.car-price,
+.car-segment {
+    font-size: 1em;
+    font-weight: bold;
+    color: #444;
+}
+
+.price,
+.segment {
+    font-size: 1.1em;
+    color: #007aff;
+}
+
+.car-engine,
+.car-brand {
+    font-size: 0.9em;
+    color: #666;
+}
+/*End Css car infor */
+
+/* Css cho ảnh của trang chi tiết xe */
+.gallery-car {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 30px;
+}
+
+.thumb-big {
+    position: relative;
+    width: 100%;
+    margin-bottom: 15px;
+    overflow: hidden;
+}
+
+.thumb-big .main-image {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+}
+
+.thumb-big:hover .main-image {
+    transform: scale(1.05);
+    overflow: hidden;
+}
+
+.gallery-thumbs {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    width: 100%;
+}
+
+.gallery-thumbs .thumb_img {
+    flex: 0 0 auto;
+    width: 108px;
+    height: 72px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    transition: box-shadow 0.3s ease;
+}
+
+.gallery-thumbs .thumb_img:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+}
+
+.thumbnail-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Style cho modal */
+.image-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8); /* Màu nền tối mờ */
+    display: none; /* Ẩn modal mặc định */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Đảm bảo modal nằm trên các phần tử khác */
+    overflow: hidden; /* Không cho phép cuộn trang */
+}
+
+/* Style cho ảnh trong modal */
+.image-modal .modal-content {
+    position: relative;
+    max-width: 90%; /* Chiếm 90% chiều rộng */
+    max-height: 90%; /* Chiếm 90% chiều cao */
+    text-align: center;
+}
+
+/* Style cho ảnh phóng to */
+.image-modal .modal-content img {
+    width: 100%;
+    height: auto;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.7); /* Viền ảnh sáng */
+    border-radius: 5px; /* Bo góc ảnh */
+}
+
+/* Nút đóng modal */
+.image-modal .close-modal {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 35px;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+}
+
+/* Hiệu ứng zoom vào ảnh */
+.image-modal .modal-content img {
+    transition: transform 0.3s ease;
+}
+
+.image-modal.show .modal-content img {
+    transform: scale(1.05); /* Phóng to ảnh khi mở modal */
+}
+
+
+/*End Css cho ảnh của trang chi tiết xe */
+
+/* css mô tả */
+.car-description{
+    width: 100%;
+    text-align: justify;
+}
+/*End css mô tả */
+
+/* Style for the card containing the specs section */
+
+.card.specs-section {
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+/* Header of the specs section */
+.specs-header {
+    background-color: white;
+    padding: 10px;
+    font-weight: bold;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between; /* Aligns header text and toggle icon */
+    align-items: center;
+    cursor: pointer;
+}
+.specs-header:hover{
+    background-color: #aaa;
+}
+/* Styling the toggle sign icon */
+.specs-header .toggle-sign {
+    font-size: 20px;
+    font-weight: bold;
+    display: inline-block;
+    margin-left: auto; /* Align icon to the right */
+}
+
+/* Initially hide the table */
+.table.specs-table {
+    max-height: -1000px; /* Set the initial height to 0 */
+    overflow: hidden; /* Hide the content when it's collapsed */
+    display: none;
+    width: 100%;
+    transition: 0.35s ease, padding 0.35s ease; /* Thêm hiệu ứng padding */
+}
+
+/* Show table when it has the 'show' class */
+.table.specs-table.show {
+    display: table;
+    max-height: 1000px;
+    padding: 10px; /* Cung cấp không gian bên trong bảng khi hiển thị */
+}
+
+/* When the header is open, hide the plus icon and show the minus icon */
+.specs-header.open{
+    background-color: #aaa;
+}
+.specs-header.open .toggle-sign i.fa-plus {
+    display: none; /* Hide the plus sign */
+}
+
+.specs-header.open .toggle-sign i.fa-minus {
+    display: inline; /* Show the minus sign */
+}
+
+/* Styling for table cells */
+.specs-table th, .specs-table td {
+    padding: 8px 12px;
+    text-align: left;
+    vertical-align: middle;
+    width: 50%;
+}
+
+/* Make sure icons inside the table are aligned correctly */
+.specs-table i {
+    margin-right: 5px;
+}
