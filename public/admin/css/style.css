@@ -179,6 +179,10 @@
 .mb-5, .my-5 {
     margin-bottom: 20px !important;
 }
+
+.mt-2, .my-2 {
+    margin-top: 0px !important;
+}
 .car-info {
     padding: 20px;
     background-color: #f9f9f9;

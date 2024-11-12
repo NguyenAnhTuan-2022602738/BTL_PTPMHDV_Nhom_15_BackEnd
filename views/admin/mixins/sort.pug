@@ -1,0 +1,19 @@
+mixin sort()
+    div(sort)
+        .row    
+            .col-8
+                select(
+                    class="form-control"
+                    name="sort"
+                    sort-select
+                )
+                    option(selected disabled) -- Chọn kiểu sắp xếp --
+                    option(value="price-desc") Giá giảm dần
+                    option(value="price-asc") Giá tăng dần
+                    option(value="brand-asc") Hãng Xe A - Z
+                    option(value="brand-desc") Hãng Xe Z - A    
+            .col-4          
+                button(
+                    class="btn btn-danger mt-2"
+                    sort-clear
+                ) Clear

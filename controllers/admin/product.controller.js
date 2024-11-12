@@ -31,7 +31,18 @@ module.exports.index = async (req, res) => {
   );
   //end pagination
 
+// sort
+    let sort = {};
+
+    if(req.query.sortKey && req.query.sortValue){
+        sort[req.query.sortKey] = req.query.sortValue;
+    }else{
+        sort.brand = "desc";
+    }
+// End sort
+
   const cars = await Car_items.find(find)
+    .sort(sort)
     .limit(objectPagination.limitItems)
     .skip(objectPagination.skip);
 
