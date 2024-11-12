@@ -177,6 +177,7 @@ module.exports.detail = async (req, res) => {
 module.exports.editPatch = async (req, res) => {
   const formData = {};
 
+  // Lặp qua các trường trong form
   for (const key in req.body) {
     if (key.endsWith("_checked")) {
       const baseKey = key.replace("_checked", "");
@@ -186,23 +187,25 @@ module.exports.editPatch = async (req, res) => {
       // Lưu giá trị văn bản nếu có, nếu không lưu 'true' hoặc 'false' dựa trên checkbox
       formData[baseKey] = textValue ? textValue : isChecked ? "true" : "false";
     } else if (!formData.hasOwnProperty(key)) {
-      formData[key] = req.body[key]?.trim() || "Đang cập nhật";
+      formData[key] =
+        typeof req.body[key] === "string"
+          ? req.body[key].trim()
+          : "Đang cập nhật";
     }
   }
 
   try {
-    // Lấy ảnh cũ từ cơ sở dữ liệu
+    // Lấy xe cũ từ cơ sở dữ liệu
     const existingCar = await Car_items.findById(req.params.id);
     if (existingCar) {
       // Lấy các đường dẫn hình ảnh cũ từ car.imageUrl
       const existingImages = existingCar.imageUrl || [];
       formData.imageUrl = existingImages; // Khởi tạo với ảnh cũ
 
-      // Thêm các ảnh mới được tải lên vào mảng `imageUrl`
-      const newImages = req.files
-        ? req.files.map((file) => `/uploads/${file.filename}`)
-        : [];
-      formData.imageUrl = [...formData.imageUrl, ...newImages]; // Gộp các ảnh cũ và mới
+      // Nếu có ảnh mới được upload lên Cloudinary, gộp chúng vào mảng imageUrl
+      if (req.body.imageUrl && req.body.imageUrl.length > 0) {
+        formData.imageUrl = [...formData.imageUrl, ...req.body.imageUrl]; // Gộp các ảnh cũ và mới
+      }
     } else {
       req.flash("error", "Không tìm thấy xe để chỉnh sửa.");
       return res.redirect("back");
