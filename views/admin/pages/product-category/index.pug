@@ -1,0 +1,17 @@
+extends ../../layouts/default.pug
+
+block main 
+
+    h1 Danh mục xe
+
+    .card.mb-3 
+        .card-header Danh sách danh mục
+            .car-body
+                .row
+                    .col-2
+                        a(
+                            href=`${prefixAdmin}/car_items-category/create`
+                            class="btn btn-outline-success"
+                        ) + Thêm mới
+
+

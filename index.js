@@ -1,6 +1,7 @@
-const express = require('express');
+const express = require("express");
 const methodOverride = require("method-override");
 const bodyParser = require("body-parser");
+const path = require("path");
 const flash = require("express-flash"); //thư viện dùng cho thông báo
 const cookieParser = require("cookie-parser"); // thư viện hỗ trợ cùng flash
 const session = require("express-session"); // thư viện hỗ trợ cùng flash
@@ -20,13 +21,20 @@ const port = process.env.PORT;
 app.set("views", `${__dirname}/views`);
 app.set("view engine", "pug");
 
+//tiny mce
+app.use(
+  "/tinymce",
+  express.static(path.join(__dirname, "node_modules", "tinymce"))
+);
+//End tiny mce
+
 app.use(methodOverride("_method"));
 
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({ extended: false }));
 
 //flash
-app.use(cookieParser('TUANNGUYENCODER'));
-app.use(session({ cookie: { maxAge: 60000 }}));
+app.use(cookieParser("TUANNGUYENCODER"));
+app.use(session({ cookie: { maxAge: 60000 } }));
 app.use(flash());
 //End flash
 
@@ -40,5 +48,5 @@ route(app);
 routeAdmin(app);
 
 app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
+  console.log(`Example app listening on port ${port}`);
 });

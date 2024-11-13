@@ -42,7 +42,7 @@ block main
 
                 div(class="car-description shadow p-3 mb-5 bg-white rounded")
                     h3 Mô tả và Đánh giá
-                    p #{car.description || "Thông tin đang cập nhật..."}
+                    p !{car.description || "Thông tin đang cập nhật..."}
 
                 div(class="car-specs shadow p-3 mb-5 bg-white rounded")
                     h3 Thông số kỹ thuật
