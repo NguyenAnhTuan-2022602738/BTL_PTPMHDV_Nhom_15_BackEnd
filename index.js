@@ -10,6 +10,8 @@ require("dotenv").config();
 const database = require(`${__dirname}/config/database`);
 const route = require(`${__dirname}/routes/client/index.route`);
 const routeAdmin = require(`${__dirname}/routes/admin/index.route`);
+const routeApi = require(`${__dirname}/routes/api/index.route`);
+
 
 const systemConfig = require(`${__dirname}/config/system`);
 database.connect();
@@ -46,6 +48,7 @@ app.use(express.static(`${__dirname}/public`)); //dùng để public dữ liệu
 //routes
 route(app);
 routeAdmin(app);
+routeApi(app);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
