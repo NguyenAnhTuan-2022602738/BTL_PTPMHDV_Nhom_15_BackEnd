@@ -95,17 +95,17 @@ module.exports.forgotPassword = async (req, res) => {
 
   const otp = generateHelper.generateRandomNumber(8);
 
-  const timeExpire = 5;
+  const timeExpire = 3;
 
-  
   //Lưu data vào database
   const objectForgotPassword = {
     email: email,
     otp: otp,
-    expireAt: Date.now() + timeExpire*60,
-  }
+    expireAt: Date.now() + timeExpire * 60,
+  };
 
   const forgotPassword = new ForgotPassword(objectForgotPassword);
+
   await forgotPassword.save();
 
   //Gửi OTP qua email User
@@ -118,6 +118,37 @@ module.exports.forgotPassword = async (req, res) => {
   sendMailHelper.sendMail(email, subject, html);
   res.json({
     code: 200,
-    message: "Đã gửi mã OTP qua email"
+    message: "Đã gửi mã OTP qua email",
+  });
+};
+
+//[POST] /api/users/password/otp
+module.exports.otpPassword = async (req, res) => {
+  const email = req.body.email;
+  const otp = req.body.otp;
+
+  const result = await ForgotPassword.findOne({
+    email: email,
+    otp: otp,
+  });
+
+  if (!result) {
+    res.json({
+      code: 500,
+      message: "Mã OTP không hợp lệ"
+    });
+  }
+
+  const user = await User.findOne({
+    email: email
+  })
+  const token = user.token;
+
+  res.cookie("token", token);
+
+  res.json({
+    code: 200,
+    message: "Xác thực thành công",
+    token: token
   });
 };
