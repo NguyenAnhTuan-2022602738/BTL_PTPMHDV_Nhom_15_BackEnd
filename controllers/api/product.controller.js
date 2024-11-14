@@ -2,9 +2,19 @@ const Car_items = require("../../models/product.model");
 
 //[GET] /api/car_items
 module.exports.index = async (req, res) => {
-  const car_items = await Car_items.find({
-    deleted: false,
-  }).select("name version price vehicle_segment");
+
+  let find ={
+    deleted: false
+  }
+
+  //sort
+  let sort = {};
+  if(req.query.sortKey && req.query.sortValue){
+    sort[req.query.sortKey] = req.query.sortValue;
+  }
+  //End sort
+
+  const car_items = await Car_items.find(find).select("brand name version price vehicle_segment").sort(sort);
 
   res.json(car_items);
 };
