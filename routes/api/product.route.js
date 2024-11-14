@@ -9,6 +9,6 @@ router.get("/deleted", controller.deleted);
 
 router.get("/detail/:id", controller.detail);
 
-router.post("/create", controller.create);
+// router.post("/create", controller.create);
 
 module.exports = router;

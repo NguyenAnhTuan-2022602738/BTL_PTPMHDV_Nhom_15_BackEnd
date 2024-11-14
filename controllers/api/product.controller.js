@@ -67,62 +67,62 @@ module.exports.deleted = async (req, res) => {
   res.json(car_items);
 };
 
-// [POST] /api/car_items/create
-module.exports.create = async (req, res) => {
-  try {
-    const formData = {};
+// // [POST] /api/car_items/create
+// module.exports.create = async (req, res) => {
+//   try {
+//     const formData = {};
 
-    // Xử lý dữ liệu từ req.body
-    for (const key in req.body) {
-      if (key.endsWith("_checked")) {
-        const baseKey = key.replace("_checked", "");
-        const textValue = req.body[baseKey]?.trim() || "";
-        const isChecked = req.body[key] === "on";
+//     // Xử lý dữ liệu từ req.body
+//     for (const key in req.body) {
+//       if (key.endsWith("_checked")) {
+//         const baseKey = key.replace("_checked", "");
+//         const textValue = req.body[baseKey]?.trim() || "";
+//         const isChecked = req.body[key] === "on";
 
-        // Lưu giá trị text nếu có, nếu không thì lưu "true" hoặc "false" dựa trên checkbox
-        formData[baseKey] = textValue
-          ? textValue
-          : isChecked
-          ? "true"
-          : "false";
-      } else if (!formData.hasOwnProperty(key)) {
-        formData[key] =
-          typeof req.body[key] === "string" && req.body[key].trim()
-            ? req.body[key].trim()
-            : "Đang cập nhật";
-      }
-    }
+//         // Lưu giá trị text nếu có, nếu không thì lưu "true" hoặc "false" dựa trên checkbox
+//         formData[baseKey] = textValue
+//           ? textValue
+//           : isChecked
+//           ? "true"
+//           : "false";
+//       } else if (!formData.hasOwnProperty(key)) {
+//         formData[key] =
+//           typeof req.body[key] === "string" && req.body[key].trim()
+//             ? req.body[key].trim()
+//             : "Đang cập nhật";
+//       }
+//     }
 
-    // Kiểm tra trùng lặp version, name và brand
-    const existingCar = await Car_items.findOne({
-      version: formData.version,
-      name: formData.name,
-      brand: formData.brand,
-    });
+//     // Kiểm tra trùng lặp version, name và brand
+//     const existingCar = await Car_items.findOne({
+//       version: formData.version,
+//       name: formData.name,
+//       brand: formData.brand,
+//     });
 
-    if (existingCar) {
-      return res.status(409).json({
-        code: 409,
-        message: "Trùng sản phẩm!",
-      });
-    }
+//     if (existingCar) {
+//       return res.status(409).json({
+//         code: 409,
+//         message: "Trùng sản phẩm!",
+//       });
+//     }
 
-    // Lấy URL ảnh từ `req.body.imageUrl` đã được upload ở route
-    formData.imageUrl = req.body.imageUrl || [];
+//     // Lấy URL ảnh từ `req.body.imageUrl` đã được upload ở route
+//     formData.imageUrl = req.body.imageUrl || [];
 
-    // Tạo bản ghi mới
-    const car = new Car_items(formData);
-    const data = await car.save();
+//     // Tạo bản ghi mới
+//     const car = new Car_items(formData);
+//     const data = await car.save();
 
-    res.status(200).json({
-      code: 200,
-      message: "Tạo thành công",
-      data: data,
-    });
-  } catch (error) {
-    res.status(500).json({
-      code: 500,
-      message: "Lỗi hệ thống",
-    });
-  }
-};
+//     res.status(200).json({
+//       code: 200,
+//       message: "Tạo thành công",
+//       data: data,
+//     });
+//   } catch (error) {
+//     res.status(500).json({
+//       code: 500,
+//       message: "Lỗi hệ thống",
+//     });
+//   }
+// };
