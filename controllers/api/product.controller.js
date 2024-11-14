@@ -197,3 +197,51 @@ module.exports.edit = async (req, res) => {
     });
   }
 };
+
+//[DELETE] /api/car_items/delete/:id
+module.exports.delete = async (req, res) => {
+  const id = req.params.id;
+  try {
+    //await Car_items.deleteOne({ _id: id});
+    await Car_items.updateOne(
+      { _id: id },
+      { deleted: true, deletedAt: new Date() }
+    );
+    return res.status(200).json({
+      code: 200,
+      message: "Xóa thành công",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      code: 500,
+      message: "Lỗi",
+    });
+  }
+};
+
+//[PATCH] /admin/car_items/change-multi
+module.exports.changeMulti = async (req, res) => {
+  try {
+    const {ids, type} = req.body;
+
+    switch (type) {
+      case "delete-multi":
+        await Car_items.updateMany(
+          { _id: { $in: ids } },
+          { deleted: true, deletedAt: new Date() }
+        );
+        res.status(200).json({
+          code: 200,
+          message: `Xóa thành công ${ids.length} xe`,
+        });
+        break;
+      default:
+        break;
+    }
+  } catch (error) {
+    return res.status(500).json({
+      code: 500,
+      message: "Lỗi",
+    });
+  }
+};
