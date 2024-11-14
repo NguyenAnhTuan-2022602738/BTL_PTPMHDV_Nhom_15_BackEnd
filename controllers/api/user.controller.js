@@ -135,13 +135,13 @@ module.exports.otpPassword = async (req, res) => {
   if (!result) {
     res.json({
       code: 500,
-      message: "Mã OTP không hợp lệ"
+      message: "Mã OTP không hợp lệ",
     });
   }
 
   const user = await User.findOne({
-    email: email
-  })
+    email: email,
+  });
   const token = user.token;
 
   res.cookie("token", token);
@@ -149,6 +149,38 @@ module.exports.otpPassword = async (req, res) => {
   res.json({
     code: 200,
     message: "Xác thực thành công",
-    token: token
+    token: token,
+  });
+};
+
+//[POST] /api/users/password/reset
+module.exports.resetPassword = async (req, res) => {
+  const token = req.body.token;
+  const password = req.body.password;
+
+  const user = await User.findOne({
+    token: token,
+  });
+
+  if (md5(password) === user.password) {
+    res.json({
+      code: 500,
+      message: "Vui lòng nhập mật khẩu mới khác mật khẩu cũ.",
+    });
+    return;
+  }
+
+  await User.updateOne(
+    {
+        token: token,
+    },
+    {
+        password: md5(password),
+    }
+  );
+
+  res.json({
+    code: 200,
+    message: "Đổi mật khẩu thành công",
   });
 };
