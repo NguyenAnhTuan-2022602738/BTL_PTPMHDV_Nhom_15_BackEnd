@@ -5,6 +5,7 @@ const path = require("path");
 const flash = require("express-flash"); //thư viện dùng cho thông báo
 const cookieParser = require("cookie-parser"); // thư viện hỗ trợ cùng flash
 const session = require("express-session"); // thư viện hỗ trợ cùng flash
+const cors = require('cors')
 require("dotenv").config();
 
 const database = require(`${__dirname}/config/database`);
@@ -47,6 +48,7 @@ app.locals.prefixAdmin = systemConfig.prefixAdmin;
 
 app.use(express.static(`${__dirname}/public`)); //dùng để public dữ liệu
 
+app.use(cors());
 //routes
 route(app);
 routeAdmin(app);
