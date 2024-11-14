@@ -136,3 +136,64 @@ module.exports.create = async (req, res) => {
     });
   }
 };
+
+// [PATCH] /api/car_items/edit/:id
+module.exports.edit = async (req, res) => {
+  const formData = {};
+
+  // Lặp qua các trường trong form
+  for (const key in req.body) {
+    if (key.endsWith("_checked")) {
+      const baseKey = key.replace("_checked", "");
+      const textValue = req.body[baseKey]?.trim() || "";
+      const isChecked = req.body[key] === "on";
+
+      // Lưu giá trị văn bản nếu có, nếu không lưu 'true' hoặc 'false' dựa trên checkbox
+      formData[baseKey] = textValue ? textValue : isChecked ? "true" : "false";
+    } else if (!formData.hasOwnProperty(key)) {
+      formData[key] =
+        typeof req.body[key] === "string"
+          ? req.body[key].trim()
+          : "Đang cập nhật";
+    }
+  }
+
+  try {
+    // Lấy xe cũ từ cơ sở dữ liệu
+    const existingCar = await Car_items.findById(req.params.id);
+    if (!existingCar) {
+      return res.status(404).json({
+        code: 404,
+        message: "Không tìm thấy xe để chỉnh sửa.",
+      });
+    }
+
+    // Lấy các đường dẫn hình ảnh cũ từ car.imageUrl
+    const existingImages = existingCar.imageUrl || [];
+    formData.imageUrl = existingImages; // Khởi tạo với ảnh cũ
+
+    // Nếu có ảnh mới được upload lên Cloudinary, gộp chúng vào mảng imageUrl
+    if (req.body.imageUrl && req.body.imageUrl.length > 0) {
+      formData.imageUrl = [...formData.imageUrl, ...req.body.imageUrl]; // Gộp các ảnh cũ và mới
+    }
+
+    // Cập nhật thông tin xe trong cơ sở dữ liệu
+    await Car_items.updateOne(
+      { _id: req.params.id },
+      { $set: formData } // Cập nhật các trường trong formData
+    );
+
+    // Trả về kết quả thành công
+    return res.status(200).json({
+      code: 200,
+      message: "Sửa xe thành công!",
+      data: formData, // Trả lại dữ liệu đã cập nhật
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      code: 500,
+      message: "Có lỗi xảy ra trong quá trình lưu dữ liệu.",
+    });
+  }
+};
