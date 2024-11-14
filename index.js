@@ -34,6 +34,8 @@ app.use(methodOverride("_method"));
 
 app.use(bodyParser.urlencoded({ extended: false }));
 
+app.use(express.json()); // Để parse dữ liệu JSO
+
 //flash
 app.use(cookieParser("TUANNGUYENCODER"));
 app.use(session({ cookie: { maxAge: 60000 } }));
