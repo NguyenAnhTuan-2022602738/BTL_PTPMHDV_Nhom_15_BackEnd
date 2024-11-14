@@ -1,20 +1,34 @@
 const Car_items = require("../../models/product.model");
-
+const paginationHelper = require("../../helpers/pagination");
 //[GET] /api/car_items
 module.exports.index = async (req, res) => {
-
-  let find ={
-    deleted: false
-  }
+  let find = {
+    deleted: false,
+  };
 
   //sort
   let sort = {};
-  if(req.query.sortKey && req.query.sortValue){
+  if (req.query.sortKey && req.query.sortValue) {
     sort[req.query.sortKey] = req.query.sortValue;
   }
   //End sort
+  const countCars = await Car_items.countDocuments(find);
+  //Pagination
+  let objectPagination = paginationHelper(
+    {
+      currentPage: 1,
+      limitItems: 10,
+    },
+    req.query,
+    countCars
+  );
+  //End Pagination
 
-  const car_items = await Car_items.find(find).select("brand name version price vehicle_segment").sort(sort);
+  const car_items = await Car_items.find(find)
+    .select("brand name version price vehicle_segment")
+    .sort(sort)
+    .limit(objectPagination.limitItems)
+    .skip(objectPagination.skip);
 
   res.json(car_items);
 };
@@ -42,8 +56,3 @@ module.exports.deleted = async (req, res) => {
 
   res.json(car_items);
 };
-
-
-
-
-

@@ -3,6 +3,10 @@ module.exports = (objectPagination, query, countCars) => {
         objectPagination.currentPage = parseInt(query.page);
     }
 
+    if(query.limit){
+        objectPagination.limitItems = parseInt(query.limit);
+    }
+
     objectPagination.skip = (objectPagination.currentPage - 1) * objectPagination.limitItems;
 
     
