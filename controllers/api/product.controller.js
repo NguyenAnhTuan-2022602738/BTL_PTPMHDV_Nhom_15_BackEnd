@@ -1,10 +1,20 @@
 const Car_items = require("../../models/product.model");
 const paginationHelper = require("../../helpers/pagination");
+const searchHelper = require("../../helpers/search");
+
 //[GET] /api/car_items
 module.exports.index = async (req, res) => {
   let find = {
     deleted: false,
   };
+
+  //Tối ưu tìm kiếm
+  const objectSearch = searchHelper(req.query);
+
+  if (objectSearch.regex) {
+    find.brand = objectSearch.regex;
+  }
+  //End Tối ưu tìm kiếm
 
   //sort
   let sort = {};
