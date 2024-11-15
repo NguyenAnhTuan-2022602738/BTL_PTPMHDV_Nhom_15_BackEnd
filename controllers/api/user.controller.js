@@ -94,7 +94,7 @@ module.exports.forgotPassword = async (req, res) => {
   }
 
   // Generate OTP
-  const otp = generateRandomNumber(8);
+  const otp = generateHelper.generateRandomNumber(8);
   
   // OTP Expiry time in milliseconds (3 minutes)
   const timeExpire = 3 * 60 * 1000;  // Convert to milliseconds
