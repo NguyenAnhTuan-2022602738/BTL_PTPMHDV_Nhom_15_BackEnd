@@ -76,50 +76,65 @@ module.exports.login = async (req, res) => {
   });
 };
 
-//[POST] /api/users/password/forgot
+// [POST] /api/users/password/forgot
 module.exports.forgotPassword = async (req, res) => {
   const email = req.body.email;
 
+  // Find user by email
   const user = await User.findOne({
     email: email,
     deleted: false,
   });
 
   if (!user) {
-    res.json({
+    return res.status(404).json({
       code: 500,
       message: "Email không tồn tại!",
     });
-    return;
   }
 
-  const otp = generateHelper.generateRandomNumber(8);
+  // Generate OTP
+  const otp = generateRandomNumber(8);
+  
+  // OTP Expiry time in milliseconds (3 minutes)
+  const timeExpire = 3 * 60 * 1000;  // Convert to milliseconds
 
-  const timeExpire = 3;
-
-  //Lưu data vào database
+  // Save OTP data in database
   const objectForgotPassword = {
     email: email,
     otp: otp,
-    expireAt: Date.now() + timeExpire * 60,
+    expireAt: Date.now() + timeExpire, // Set expiry time for OTP
   };
 
   const forgotPassword = new ForgotPassword(objectForgotPassword);
 
-  await forgotPassword.save();
+  try {
+    await forgotPassword.save();  // Save OTP record
 
-  //Gửi OTP qua email User
-  const subject = "Mã OTP xác minh lấy lại mật khẩu";
-  const html = `
-    Mã OTP để lấy lại mật khẩu của bạn là  <b>${otp}</b> (Sử dụng trong ${timeExpire} phút).
-    Vui lòng không chia sẻ mã OTP này với bất kỳ ai.
-  `;
+    // Prepare the email content
+    const subject = "Mã OTP xác minh lấy lại mật khẩu";
+    const html = `
+      Mã OTP để lấy lại mật khẩu của bạn là  <b>${otp}</b> (Sử dụng trong 3 phút).
+      Vui lòng không chia sẻ mã OTP này với bất kỳ ai.
+    `;
 
-  sendMailHelper.sendMail(email, subject, html);
-  res.json({
-    code: 200,
-    message: "Đã gửi mã OTP qua email",
-  });
+    // Send OTP via email
+    await sendMailHelper.sendMail(email, subject, html);
+    
+    // Respond with success message
+    return res.status(200).json({
+      code: 200,
+      message: "Đã gửi mã OTP qua email",
+    });
+  } catch (error) {
+    console.error('Error while sending OTP email:', error);
+
+    // Handle errors during OTP generation or email sending
+    return res.status(500).json({
+      code: 500,
+      message: 'Không thể gửi mã OTP. Vui lòng thử lại sau!',
+    });
+  }
 };
 
 //[POST] /api/users/password/otp
