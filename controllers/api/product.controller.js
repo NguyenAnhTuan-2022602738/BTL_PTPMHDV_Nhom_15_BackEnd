@@ -60,17 +60,24 @@ module.exports.index = async (req, res) => {
 //[GET] /api/car_items/detail
 module.exports.detail = async (req, res) => {
   try {
+    const { id } = req.params; // Lấy id từ tham số đường dẫn
     const find = {
       deleted: false,
-      _id: req.params.id,
+      _id: id,
     };
+
     const car = await Car_items.findOne(find);
+    if (!car) {
+      return res.status(404).json({ message: "Không tìm thấy xe" });
+    }
 
     res.json(car);
   } catch (error) {
-    res.json("Không tìm thấy");
+    console.error("Lỗi khi tìm chi tiết xe:", error);
+    res.status(500).json({ message: "Lỗi hệ thống" });
   }
 };
+
 
 //[GET] /api/car_items/deleted
 module.exports.deleted = async (req, res) => {
@@ -86,21 +93,19 @@ module.exports.create = async (req, res) => {
   try {
     const formData = {};
 
-    // Xử lý dữ liệu từ req.body
+    // Lưu dữ liệu từ req.body
     for (const key in req.body) {
       if (key.endsWith("_checked")) {
         const baseKey = key.replace("_checked", "");
         const textValue = req.body[baseKey]?.trim() || "";
         const isChecked = req.body[key] === "on";
 
-        // Lưu giá trị text nếu có, nếu không thì lưu "true" hoặc "false" dựa trên checkbox
         formData[baseKey] = textValue
           ? textValue
           : isChecked
           ? "true"
           : "false";
       } else if (!formData.hasOwnProperty(key)) {
-        // Nếu trường này là chuỗi và không trống thì lưu lại, nếu không thì gán là "Đang cập nhật"
         formData[key] =
           typeof req.body[key] === "string" && req.body[key].trim()
             ? req.body[key].trim()
@@ -109,12 +114,10 @@ module.exports.create = async (req, res) => {
     }
 
     // Kiểm tra trùng lặp version, name và brand
-    // Loại bỏ khoảng trắng thừa ở các trường quan trọng để kiểm tra chính xác
     formData.version = formData.version?.trim();
     formData.name = formData.name?.trim();
     formData.brand = formData.brand?.trim();
 
-    // Kiểm tra trùng lặp trong cơ sở dữ liệu
     const existingCar = await Car_items.findOne({
       version: formData.version,
       name: formData.name,
@@ -128,11 +131,17 @@ module.exports.create = async (req, res) => {
       });
     }
 
-    // Xử lý URL ảnh
-    formData.imageUrl =
-      req.body.imageUrl && Array.isArray(req.body.imageUrl)
-        ? req.body.imageUrl
-        : [];
+    // Xử lý upload ảnh lên Cloudinary
+    const imageUrls = [];
+    if (req.files) {
+      // Nếu có file ảnh
+      for (const file of req.files) {
+        const result = await cloudinary.uploader.upload(file.path);
+        imageUrls.push(result.secure_url); // Lưu URL hình ảnh
+      }
+    }
+
+    formData.imageUrl = imageUrls; // Lưu tất cả URL hình ảnh vào formData
 
     // Tạo bản ghi mới
     const car = new Car_items(formData);
@@ -144,13 +153,13 @@ module.exports.create = async (req, res) => {
       data: data,
     });
   } catch (error) {
+    console.error("Error saving car:", error);
     res.status(500).json({
       code: 500,
       message: "Lỗi hệ thống",
     });
   }
 };
-
 // [PATCH] /api/car_items/edit/:id
 module.exports.edit = async (req, res) => {
   const formData = {};
