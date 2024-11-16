@@ -17,4 +17,6 @@ router.delete("/delete/:id", controller.delete);
 
 router.patch("/change_multi", controller.changeMulti);//xóa nhiều xe cùng lúc
 
+router.get("/count_by_segment", controller.countBySegment);
+
 module.exports = router;
