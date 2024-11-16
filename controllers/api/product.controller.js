@@ -4,43 +4,57 @@ const searchHelper = require("../../helpers/search");
 
 //[GET] /api/car_items
 module.exports.index = async (req, res) => {
-  let find = {
-    deleted: false,
-  };
+  try {
+    let find = { deleted: false };
+    
+    // Tối ưu tìm kiếm
+    const objectSearch = searchHelper(req.query);
+    if (objectSearch.regex) {
+      // Kiểm tra searchKey để quyết định tìm kiếm theo brand hay name
+      if (req.query.searchKey === 'brand') {
+        find.brand = objectSearch.regex;
+      } else if (req.query.searchKey === 'name') {
+        find.name = objectSearch.regex;
+      }
+    }
 
-  //Tối ưu tìm kiếm
-  const objectSearch = searchHelper(req.query);
+    // Sort
+    let sort = {};
+    if (req.query.sortKey && req.query.sortValue) {
+      sort[req.query.sortKey] = req.query.sortValue; // Sắp xếp theo các key và value
+    }
 
-  if (objectSearch.regex) {
-    find.brand = objectSearch.regex;
+    // Đếm tổng số xe
+    const countCars = await Car_items.countDocuments(find);
+
+    // Pagination
+    let objectPagination = paginationHelper(
+      {
+        currentPage: 1,
+        limitItems: 10,
+      },
+      req.query,
+      countCars
+    );
+
+    // Fetch data từ cơ sở dữ liệu
+    const car_items = await Car_items.find(find)
+      .select("name brand version price vehicle_segment imageUrl")
+      .sort(sort)
+      .limit(objectPagination.limitItems)
+      .skip(objectPagination.skip);
+
+    // Trả về dữ liệu
+    res.json({
+      cars: car_items,
+      totalCars: countCars,
+      totalPages: Math.ceil(countCars / objectPagination.limitItems),
+      currentPage: objectPagination.currentPage,
+    });
+  } catch (error) {
+    console.error("Error fetching car items:", error);
+    res.status(500).json({ message: "Có lỗi xảy ra." });
   }
-  //End Tối ưu tìm kiếm
-
-  //sort
-  let sort = {};
-  if (req.query.sortKey && req.query.sortValue) {
-    sort[req.query.sortKey] = req.query.sortValue;
-  }
-  //End sort
-  const countCars = await Car_items.countDocuments(find);
-  //Pagination
-  let objectPagination = paginationHelper(
-    {
-      currentPage: 1,
-      limitItems: 10,
-    },
-    req.query,
-    countCars
-  );
-  //End Pagination
-
-  const car_items = await Car_items.find(find)
-    .select("name brand version price vehicle_segment imageUrl")
-    .sort(sort)
-    .limit(objectPagination.limitItems)
-    .skip(objectPagination.skip);
-
-  res.json(car_items);
 };
 
 //[GET] /api/car_items/detail
@@ -222,7 +236,15 @@ module.exports.delete = async (req, res) => {
 //[PATCH] /admin/car_items/change-multi
 module.exports.changeMulti = async (req, res) => {
   try {
-    const {ids, type} = req.body;
+    const { ids, type } = req.body;
+
+    // Kiểm tra nếu ids và type được cung cấp
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({
+        code: 400,
+        message: "Invalid ids provided.",
+      });
+    }
 
     switch (type) {
       case "delete-multi":
@@ -230,18 +252,40 @@ module.exports.changeMulti = async (req, res) => {
           { _id: { $in: ids } },
           { deleted: true, deletedAt: new Date() }
         );
-        res.status(200).json({
+        return res.status(200).json({
           code: 200,
-          message: `Xóa thành công ${ids.length} xe`,
+          message: `Xóa thành công ${ids.length} xe.`,
         });
-        break;
+
       default:
-        break;
+        return res.status(400).json({
+          code: 400,
+          message: "Invalid operation type provided.",
+        });
     }
   } catch (error) {
+    console.error("Error in changeMulti:", error); // Để dễ dàng debug
     return res.status(500).json({
       code: 500,
-      message: "Lỗi",
+      message: "Có lỗi xảy ra trong quá trình xử lý yêu cầu.",
     });
+  }
+};
+
+// [GET] /api/car_items/count_by_segment
+module.exports.countBySegment = async (req, res) => {
+  try {
+    const counts = await Car_items.aggregate([
+      { $match: { deleted: false } },
+      { $group: { _id: "$vehicle_segment", count: { $sum: 1 } } }
+    ]);
+    
+    res.json(counts.map(segment => ({
+      vehicle_segment: segment._id,
+      count: segment.count
+    })));
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Có lỗi xảy ra." });
   }
 };

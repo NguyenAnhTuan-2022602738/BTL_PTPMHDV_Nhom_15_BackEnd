@@ -9,6 +9,9 @@ const uploadCloud = require("../../middlewares/admin/uploadCloud.middleware");
 const controller = require("../../controllers/admin/product.controller");
 const validate = require("../../validates/admin/product.validate");
 
+const axios = require("axios");
+const BASE_API_URL = "https://btl-ptpmhdv-nhom-15.vercel.app/api"; 
+
 router.get("/", controller.index);
 
 router.delete(`/delete/:id`, controller.deleteItem);

@@ -1,0 +1,50 @@
+extends ../../layouts/default.pug
+include ../../mixins/alert.pug
+
+block main 
+
+    h1(class="mb-4") Phân quyền 
+
+    div(class="text-right")
+        button(type="submit" class="btn btn-primary mb-3 button-submit")
+            | Cập nhật
+
+    table(class="table table-hover table-sm")
+        thead
+            tr
+                th(class="text-center") Tính năng
+                th(class="text-center") Quản trị viên
+                th(class="text-center") Quản lý nội dung
+        tbody
+            tr
+                td(colspan="4")
+                    b Danh mục sản phẩm
+            tr(data-name="products-category_view")
+                td(class="text-center") Xem
+                td(class="text-center")
+                    input(type="checkbox")
+                td(class="text-center")
+                    input(type="checkbox")
+            
+            tr(data-name="products-category_view")
+                td(class="text-center") Thêm mới
+                td(class="text-center")
+                    input(type="checkbox")
+                td(class="text-center")
+                    input(type="checkbox")
+
+            tr(data-name="products-category_view")
+                td(class="text-center") Chỉnh sửa 
+                td(class="text-center")
+                    input(type="checkbox")
+                td(class="text-center")
+                    input(type="checkbox")
+            
+            tr(data-name="products-category_view")
+                td(class="text-center") Xóa
+                td(class="text-center")
+                    input(type="checkbox")
+                td(class="text-center")
+                    input(type="checkbox")
+            
+

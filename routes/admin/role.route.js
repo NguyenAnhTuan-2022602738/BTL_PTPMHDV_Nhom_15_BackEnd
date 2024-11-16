@@ -14,9 +14,7 @@ router.get("/edit/:id", controller.edit);
 
 router.patch("/edit/:id", controller.editPatch);
 
-// router.patch("/edit:id", controller.editPatch);
-
-// router.patch("/permission", controller.permission);
+router.get("/permissions", controller.permissions);
 
 
 
