@@ -1,6 +1,7 @@
 const Car_items = require("../../models/product.model");
 const paginationHelper = require("../../helpers/pagination");
 const searchHelper = require("../../helpers/search");
+const cloudinary = require("../../middlewares/admin/uploadCloud.middleware")
 
 //[GET] /api/car_items
 module.exports.index = async (req, res) => {
@@ -81,11 +82,57 @@ module.exports.detail = async (req, res) => {
 
 //[GET] /api/car_items/deleted
 module.exports.deleted = async (req, res) => {
-  const car_items = await Car_items.find({
-    deleted: true,
-  }).select("name version price vehicle_segment imageUrl[0]");
+  try {
+    let find = { deleted: true };
+    
+    // Tối ưu tìm kiếm
+    const objectSearch = searchHelper(req.query);
+    if (objectSearch.regex) {
+      // Kiểm tra searchKey để quyết định tìm kiếm theo brand hay name
+      if (req.query.searchKey === 'brand') {
+        find.brand = objectSearch.regex;
+      } else if (req.query.searchKey === 'name') {
+        find.name = objectSearch.regex;
+      }
+    }
 
-  res.json(car_items);
+    // Sort
+    let sort = {};
+    if (req.query.sortKey && req.query.sortValue) {
+      sort[req.query.sortKey] = req.query.sortValue; // Sắp xếp theo các key và value
+    }
+
+    // Đếm tổng số xe
+    const countCars = await Car_items.countDocuments(find);
+
+    // Pagination
+    let objectPagination = paginationHelper(
+      {
+        currentPage: 1,
+        limitItems: 10,
+      },
+      req.query,
+      countCars
+    );
+
+    // Fetch data từ cơ sở dữ liệu
+    const car_items = await Car_items.find(find)
+      .select("name brand version price vehicle_segment imageUrl")
+      .sort(sort)
+      .limit(objectPagination.limitItems)
+      .skip(objectPagination.skip);
+
+    // Trả về dữ liệu
+    res.json({
+      cars: car_items,
+      totalCars: countCars,
+      totalPages: Math.ceil(countCars / objectPagination.limitItems),
+      currentPage: objectPagination.currentPage,
+    });
+  } catch (error) {
+    console.error("Error fetching car items:", error);
+    res.status(500).json({ message: "Có lỗi xảy ra." });
+  }
 };
 
 // [POST] /api/car_items/create
@@ -131,17 +178,8 @@ module.exports.create = async (req, res) => {
       });
     }
 
-    // Xử lý upload ảnh lên Cloudinary
-    const imageUrls = [];
-    if (req.files) {
-      // Nếu có file ảnh
-      for (const file of req.files) {
-        const result = await cloudinary.uploader.upload(file.path);
-        imageUrls.push(result.secure_url); // Lưu URL hình ảnh
-      }
-    }
-
-    formData.imageUrl = imageUrls; // Lưu tất cả URL hình ảnh vào formData
+    // URL hình đã được lưu vào req.body.imageUrl từ middleware
+    formData.imageUrl = req.body.imageUrl; // URL hình ảnh từ Cloudinary
 
     // Tạo bản ghi mới
     const car = new Car_items(formData);
@@ -174,10 +212,13 @@ module.exports.edit = async (req, res) => {
       // Lưu giá trị văn bản nếu có, nếu không lưu 'true' hoặc 'false' dựa trên checkbox
       formData[baseKey] = textValue ? textValue : isChecked ? "true" : "false";
     } else if (!formData.hasOwnProperty(key)) {
-      formData[key] =
-        typeof req.body[key] === "string"
-          ? req.body[key].trim()
-          : "Đang cập nhật";
+      // Đảm bảo trường 'deleted' luôn luôn bằng false
+      if (key === 'deleted') {
+        formData[key] = false;  // Gán 'deleted' luôn bằng false
+      } else {
+        // Các trường khác vẫn xử lý như bình thường
+        formData[key] = typeof req.body[key] === "string" ? req.body[key].trim() : "Đang cập nhật";
+      }
     }
   }
 
@@ -193,11 +234,16 @@ module.exports.edit = async (req, res) => {
 
     // Lấy các đường dẫn hình ảnh cũ từ car.imageUrl
     const existingImages = existingCar.imageUrl || [];
-    formData.imageUrl = existingImages; // Khởi tạo với ảnh cũ
+    formData.imageUrl = [...existingImages]; // Khởi tạo với ảnh cũ
 
     // Nếu có ảnh mới được upload lên Cloudinary, gộp chúng vào mảng imageUrl
     if (req.body.imageUrl && req.body.imageUrl.length > 0) {
-      formData.imageUrl = [...formData.imageUrl, ...req.body.imageUrl]; // Gộp các ảnh cũ và mới
+      // Kiểm tra và chỉ thêm ảnh mới nếu chưa có trong mảng ảnh cũ
+      req.body.imageUrl.forEach(image => {
+        if (!existingImages.includes(image)) {
+          formData.imageUrl.push(image);  // Thêm ảnh mới nếu chưa có
+        }
+      });
     }
 
     // Cập nhật thông tin xe trong cơ sở dữ liệu
@@ -220,6 +266,9 @@ module.exports.edit = async (req, res) => {
     });
   }
 };
+
+
+
 
 //[DELETE] /api/car_items/delete/:id
 module.exports.delete = async (req, res) => {
@@ -296,5 +345,68 @@ module.exports.countBySegment = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Có lỗi xảy ra." });
+  }
+};
+
+// [DELETE] /api/car_items/deleteDB/:id
+module.exports.deleteDB = async (req, res) => {
+  const { id } = req.params;  // Lấy ID xe từ URL
+
+  try {
+    // Xóa vĩnh viễn một chiếc xe khỏi cơ sở dữ liệu
+    const result = await Car_items.deleteOne({ _id: id });
+
+    // Kiểm tra xem có bản ghi nào bị xóa không
+    if (result.deletedCount === 0) {
+      return res.status(404).json({
+        code: 404,
+        message: "Không tìm thấy xe để xóa.",
+      });
+    }
+
+    // Trả về kết quả thành công
+    return res.status(200).json({
+      code: 200,
+      message: "Xóa thành công chiếc xe khỏi cơ sở dữ liệu.",
+    });
+  } catch (error) {
+    console.error("Lỗi khi xóa xe:", error);
+    return res.status(500).json({
+      code: 500,
+      message: "Có lỗi xảy ra trong quá trình xóa xe.",
+    });
+  }
+};
+
+// [PATCH] /api/car_items/undo-delete/:id
+module.exports.undoDelete = async (req, res) => {
+  const { id } = req.params;  // Lấy ID xe từ URL
+
+  try {
+    // Cập nhật trạng thái deleted thành false để khôi phục lại xe
+    const result = await Car_items.updateOne(
+      { _id: id },
+      { $set: { deleted: false, deletedAt: null } }
+    );
+
+    // Kiểm tra xem có bản ghi nào được cập nhật không
+    if (result.modifiedCount === 0) {
+      return res.status(404).json({
+        code: 404,
+        message: "Không tìm thấy xe để hoàn tác.",
+      });
+    }
+
+    // Trả về kết quả thành công
+    return res.status(200).json({
+      code: 200,
+      message: "Khôi phục thành công chiếc xe.",
+    });
+  } catch (error) {
+    console.error("Lỗi khi khôi phục xe:", error);
+    return res.status(500).json({
+      code: 500,
+      message: "Có lỗi xảy ra trong quá trình khôi phục xe.",
+    });
   }
 };
