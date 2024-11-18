@@ -386,7 +386,7 @@ module.exports.undoDelete = async (req, res) => {
     // Cập nhật trạng thái deleted thành false để khôi phục lại xe
     const result = await Car_items.updateOne(
       { _id: id },
-      { $set: { deleted: false, deletedAt: null } }
+      { $set: { deleted: false, updatedAt: new Date() } }
     );
 
     // Kiểm tra xem có bản ghi nào được cập nhật không
