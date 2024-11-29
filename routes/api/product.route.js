@@ -27,4 +27,14 @@ router.get("/newcars", controller.getNewCars);
 
 router.post("/:id/click", controller.incrementClick);
 
+// API lấy tất cả các thương hiệu
+router.get('/brands', controller.getBrands);
+
+// API lấy các mẫu xe theo thương hiệu
+router.get('/models/:brand', controller.getModelsByBrand);
+
+// API lấy các phiên bản xe theo mẫu xe
+router.get('/versions/:model', controller.getVersionsByModel);
+
+
 module.exports = router;

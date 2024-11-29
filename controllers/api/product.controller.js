@@ -455,3 +455,47 @@ module.exports.incrementClick = async (req, res) => {
     res.status(500).json({ message: "Có lỗi xảy ra khi cập nhật lượt click." });
   }
 };
+
+//[GET] /api/car_items/brands
+module.exports.getBrands = async (req, res) => {
+  try {
+    // Lấy danh sách tất cả các thương hiệu (không trùng lặp)
+    const brands = await Car_items.distinct("brand"); // Lấy danh sách các thương hiệu không trùng lặp
+    console.log(brands);
+    res.json({ brands });
+  } catch (error) {
+    console.error("Error fetching brands:", error);
+    res.status(500).json({ message: "Có lỗi xảy ra khi lấy thương hiệu." });
+  }
+};
+
+// [GET] /api/car_items/models/:brand
+module.exports.getModelsByBrand = async (req, res) => {
+  const { brand } = req.params;
+
+  try {
+    // Lọc xe theo thương hiệu và lấy danh sách các mẫu xe không trùng lặp
+    const models = await Car_items.find({ brand })
+      .distinct("name"); // Lấy danh sách các mẫu xe không trùng lặp
+    res.json({ models });
+  } catch (error) {
+    console.error("Error fetching models:", error);
+    res.status(500).json({ message: "Có lỗi xảy ra khi lấy mẫu xe." });
+  }
+};
+
+// [GET] /api/car_items/versions/:model
+module.exports.getVersionsByModel = async (req, res) => {
+  const { model } = req.params;
+
+  try {
+    // Lọc xe theo tên mẫu và lấy tất cả các phiên bản của mẫu xe
+    const versions = await Car_items.find({ name: model });
+
+    // Trả về các phiên bản xe
+    res.json({ versions });
+  } catch (error) {
+    console.error("Error fetching versions:", error);
+    res.status(500).json({ message: "Có lỗi xảy ra khi lấy phiên bản xe." });
+  }
+};
