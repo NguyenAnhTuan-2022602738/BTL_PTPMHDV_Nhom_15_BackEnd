@@ -25,4 +25,6 @@ router.get("/count_by_segment", controller.countBySegment);
 
 router.get("/newcars", controller.getNewCars);
 
+router.post("/:id/click", controller.incrementClick);
+
 module.exports = router;

@@ -423,9 +423,35 @@ module.exports.getNewCars = async (req, res) =>{
       .limit(4);  // Lấy 4 xe
 
     // Trả về dữ liệu
-    res.json(newCars);
+    res.json({cars: newCars});
   } catch (error) {
     console.error("Error fetching new cars:", error);
     res.status(500).json({ message: "Có lỗi xảy ra khi lấy xe mới." });
   }
 }
+
+// [POST] /api/car_items/:id/click
+module.exports.incrementClick = async (req, res) => {
+  const carId = req.params.id;
+
+  try {
+    // Tìm xe theo ID
+    const car = await Car_items.findById(carId);
+
+    if (!car) {
+      return res.status(404).json({ message: 'Xe không tìm thấy' });
+    }
+
+    // Tăng số lượt click
+    car.clickCount = car.clickCount ? car.clickCount + 1 : 1;  // Nếu chưa có clickCount thì gán là 1
+
+    // Lưu lại
+    await car.save();
+
+    // Trả về thông báo thành công
+    res.json({ message: 'Lượt click đã được cập nhật', clickCount: car.clickCount });
+  } catch (error) {
+    console.error("Error updating click count:", error);
+    res.status(500).json({ message: "Có lỗi xảy ra khi cập nhật lượt click." });
+  }
+};

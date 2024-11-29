@@ -25,6 +25,7 @@ const Car_itemsSchema = new mongoose.Schema(
             default: false
         },
         deletedAt: Date,
+        clickCount: { type: Number, default: 0 },
 
          // Thông số kỹ thuật
          //Động cơ/hộp số
