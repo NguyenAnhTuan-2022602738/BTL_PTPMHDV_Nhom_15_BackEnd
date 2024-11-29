@@ -25,3 +25,4 @@ const roleSchema = new mongoose.Schema(
 const User = mongoose.model('User', roleSchema, "users");
 
 module.exports = User;
+

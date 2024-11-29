@@ -23,4 +23,6 @@ router.patch("/undo-delete/:id", controller.undoDelete);
 
 router.get("/count_by_segment", controller.countBySegment);
 
+router.get("/newcars", controller.getNewCars);
+
 module.exports = router;

@@ -66,6 +66,7 @@ module.exports.login = async (req, res) => {
   }
 
   const token = user.token;
+  const fullname = user.fullname;
 
   res.cookie("token", token);
 
@@ -73,7 +74,30 @@ module.exports.login = async (req, res) => {
     code: 200,
     message: "Đăng nhập thành công!",
     token: token,
+    email: email,
+    fullname: fullname
   });
+};
+
+
+// [GET] /api/users/checkAuth
+module.exports.checkAuth = async (req, res) => {
+  try {
+    // Nếu token hợp lệ, trả về thông tin người dùng
+    const user = await User.findOne({ token: "OuIn9u3fpnHLpahbcD4M8u4uyN61u1" });
+    if (!user) {
+      return res.status(404).json({ message: "Người dùng không tồn tại" });
+    }
+
+    // Trả về thông tin người dùng
+    res.json({
+      fullname: user.fullname,
+      email: user.email,
+      token: user.token,
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Lỗi server" });
+  }
 };
 
 // [POST] /api/users/password/forgot
@@ -199,3 +223,40 @@ module.exports.resetPassword = async (req, res) => {
     message: "Đổi mật khẩu thành công",
   });
 };
+
+// [GET] /api/users/profile
+module.exports.getUserProfile = async (req, res) => {
+  try {
+    // Lấy thông tin người dùng từ token (middleware phải kiểm tra token trước đó)
+    const userId = req.user._id; 
+
+    // Tìm thông tin người dùng trong database
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        code: 404,
+        message: "Người dùng không tồn tại.",
+      });
+    }
+
+    // Trả về thông tin người dùng
+    res.json({
+      code: 200,
+      data: {
+        fullname: user.fullname,
+        email: user.email,
+        token: user.token,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+      },
+    });
+  } catch (error) {
+    console.error("Lỗi khi lấy thông tin người dùng:", error);
+    res.status(500).json({
+      code: 500,
+      message: "Có lỗi xảy ra khi lấy thông tin người dùng.",
+    });
+  }
+};
+

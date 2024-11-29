@@ -410,3 +410,22 @@ module.exports.undoDelete = async (req, res) => {
     });
   }
 };
+
+module.exports.getNewCars = async (req, res) =>{
+  try {
+    // Tìm xe chưa bị xóa
+    let find = { deleted: false };
+
+    // Lấy 4 xe mới nhất (sắp xếp theo _id giảm dần để lấy xe mới nhất)
+    const newCars = await Car_items.find(find)
+      .select("name brand version price vehicle_segment imageUrl")
+      .sort({ _id: -1 })  // Sắp xếp theo _id giảm dần (xe mới nhất)
+      .limit(4);  // Lấy 4 xe
+
+    // Trả về dữ liệu
+    res.json(newCars);
+  } catch (error) {
+    console.error("Error fetching new cars:", error);
+    res.status(500).json({ message: "Có lỗi xảy ra khi lấy xe mới." });
+  }
+}
