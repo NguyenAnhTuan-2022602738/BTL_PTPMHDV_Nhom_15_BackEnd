@@ -36,5 +36,5 @@ router.get('/models/:brand', controller.getModelsByBrand);
 // API lấy các phiên bản xe theo mẫu xe
 router.get('/versions/:model', controller.getVersionsByModel);
 
-
+router.get('/mucTieuThuNhienLieu', controller.getmucTieuThuNhienLieu);
 module.exports = router;

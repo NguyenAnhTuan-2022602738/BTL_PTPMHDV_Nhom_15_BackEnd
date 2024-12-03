@@ -499,3 +499,18 @@ module.exports.getVersionsByModel = async (req, res) => {
     res.status(500).json({ message: "Có lỗi xảy ra khi lấy phiên bản xe." });
   }
 };
+
+// [GET] /api/car_items/mucTieuThuNhienLieu
+module.exports.getmucTieuThuNhienLieu = async (req, res) => {
+  try {
+    // Tìm tất cả các xe không bị xóa
+    const car_items = await Car_items.find({ deleted: false }).select(
+      "name brand version mucTieuThuNhienLieu"
+    );
+
+    res.json(car_items); // Trả về danh sách mức tiêu thụ nhiên liệu
+  } catch (error) {
+    console.error("Error fetching fuel consumption data:", error);
+    res.status(500).json({ message: "Có lỗi xảy ra khi lấy dữ liệu." });
+  }
+};
