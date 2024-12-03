@@ -411,24 +411,24 @@ module.exports.undoDelete = async (req, res) => {
   }
 };
 
-module.exports.getNewCars = async (req, res) =>{
+//[GET] /api/car_items/popularCars
+module.exports.getMostClickedCars = async (req, res) => {
   try {
     // Tìm xe chưa bị xóa
     let find = { deleted: false };
 
-    // Lấy 4 xe mới nhất (sắp xếp theo _id giảm dần để lấy xe mới nhất)
-    const newCars = await Car_items.find(find)
-      .select("name brand version price vehicle_segment imageUrl")
-      .sort({ _id: -1 })  // Sắp xếp theo _id giảm dần (xe mới nhất)
+    // Lấy 4 xe có lượt click cao nhất (sắp xếp theo clickCount giảm dần)
+    const mostClickedCars = await Car_items.find(find)
+      .sort({ clickCount: -1 })  // Sắp xếp theo clickCount giảm dần
       .limit(4);  // Lấy 4 xe
 
     // Trả về dữ liệu
-    res.json({cars: newCars});
+    res.json({ cars: mostClickedCars });
   } catch (error) {
-    console.error("Error fetching new cars:", error);
-    res.status(500).json({ message: "Có lỗi xảy ra khi lấy xe mới." });
+    console.error("Error fetching most clicked cars:", error);
+    res.status(500).json({ message: "Có lỗi xảy ra khi lấy xe có lượt click cao nhất." });
   }
-}
+};
 
 // [POST] /api/car_items/:id/click
 module.exports.incrementClick = async (req, res) => {
