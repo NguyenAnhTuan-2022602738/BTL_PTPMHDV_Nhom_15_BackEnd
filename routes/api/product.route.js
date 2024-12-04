@@ -11,6 +11,8 @@ router.get("/detail/:id", controller.detail);
 
 router.post("/create", controller.create);
 
+router.post("/createByFileImport", controller.createByFileImport);
+
 router.patch("/edit/:id", controller.edit);
 
 router.delete("/delete/:id", controller.delete);

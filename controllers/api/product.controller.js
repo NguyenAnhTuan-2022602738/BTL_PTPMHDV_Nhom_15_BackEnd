@@ -198,6 +198,50 @@ module.exports.create = async (req, res) => {
     });
   }
 };
+
+// [POST] /api/car_items/createByFileImport
+module.exports.createByFileImport = async (req, res) => {
+  try {
+    const dataArray = Array.isArray(req.body) ? req.body : [req.body];
+    const results = [];
+
+    for (const formData of dataArray) {
+      // Logic kiểm tra trùng lặp và xử lý dữ liệu như cũ
+      const existingCar = await Car_items.findOne({
+        version: formData.version?.trim(),
+        name: formData.name?.trim(),
+        brand: formData.brand?.trim(),
+      });
+
+      if (existingCar) {
+        results.push({
+          status: "duplicate",
+          message: `Trùng sản phẩm: ${formData.name}`,
+        });
+      } else {
+        const car = new Car_items(formData);
+        const data = await car.save();
+        results.push({
+          status: "success",
+          data: data,
+        });
+      }
+    }
+
+    res.status(200).json({
+      code: 200,
+      message: "Import hoàn tất",
+      results: results,
+    });
+  } catch (error) {
+    console.error("Error importing cars:", error);
+    res.status(500).json({
+      code: 500,
+      message: "Lỗi hệ thống",
+    });
+  }
+};
+
 // [PATCH] /api/car_items/edit/:id
 module.exports.edit = async (req, res) => {
   const formData = {};
