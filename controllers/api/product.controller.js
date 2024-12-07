@@ -358,6 +358,15 @@ module.exports.changeMulti = async (req, res) => {
           code: 200,
           message: `Xóa thành công ${ids.length} xe.`,
         });
+      case "undoDelete-multi":
+        await Car_items.updateMany(
+          { _id: { $in: ids } },
+          { deleted: false, deletedAt: new Date() }
+        );
+        return res.status(200).json({
+          code: 200,
+          message: `Khôi phục thành công ${ids.length} xe.`,
+        });
 
       default:
         return res.status(400).json({
