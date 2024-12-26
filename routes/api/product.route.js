@@ -25,6 +25,8 @@ router.patch("/undo-delete/:id", controller.undoDelete);
 
 router.get("/count_by_segment", controller.countBySegment);
 
+router.get("/countByBrand", controller.countByBrand);
+
 router.get("/popularCars", controller.getMostClickedCars);
 
 router.post("/:id/click", controller.incrementClick);

@@ -401,6 +401,24 @@ module.exports.countBySegment = async (req, res) => {
   }
 };
 
+// [GET] /api/car_items/countByBrand
+module.exports.countByBrand = async (req, res) => {
+  try {
+    const counts = await Car_items.aggregate([
+      { $match: { deleted: false } },
+      { $group: { _id: "$brand", count: { $sum: 1 } } }
+    ]);
+    
+    res.json(counts.map(branditem => ({
+      brand: branditem._id,
+      count: branditem.count
+    })));
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Có lỗi xảy ra." });
+  }
+};
+
 // [DELETE] /api/car_items/deleteDB/:id
 module.exports.deleteDB = async (req, res) => {
   const { id } = req.params;  // Lấy ID xe từ URL
